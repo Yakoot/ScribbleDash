@@ -4,7 +4,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -19,7 +18,6 @@ import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.ui.theme.SurfaceLowest
 
 @Composable
 fun BottomBar(
