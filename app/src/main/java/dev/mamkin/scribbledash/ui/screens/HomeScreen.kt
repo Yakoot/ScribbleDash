@@ -130,7 +130,7 @@ private fun BottomNavBar() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_home),
+                painter = painterResource(id = R.drawable.ic_statistics),
                 contentDescription = "Home",
                 modifier = Modifier.size(24.dp),
                 tint = SurfaceLow
@@ -144,7 +144,7 @@ private fun BottomNavBar() {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_play),
+                    painter = painterResource(id = R.drawable.ic_home),
                     contentDescription = "Play",
                     modifier = Modifier.size(24.dp),
                     tint = Primary
@@ -204,7 +204,7 @@ private fun GameModeCards(
                     )
                     
                     Image(
-                        painter = painterResource(id = R.drawable.img_one_round_wonder),
+                        painter = painterResource(id = R.drawable.one_round_wonder),
                         contentDescription = "One Round Wonder",
                         modifier = Modifier.weight(1f)
                     )

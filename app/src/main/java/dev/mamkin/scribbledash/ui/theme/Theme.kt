@@ -15,20 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Primary,
-    onPrimary = OnPrimary,
-    secondary = Secondary,
-    tertiary = TertiaryContainer,
-    error = Error,
-    background = Background,
-    onBackground = OnBackground,
-    surface = SurfaceHigh,
-    onSurface = OnSurface,
-    surfaceVariant = SurfaceLow,
-    onSurfaceVariant = OnSurfaceVariant
-)
-
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
     onPrimary = OnPrimary,
@@ -38,38 +24,29 @@ private val LightColorScheme = lightColorScheme(
     background = Background,
     onBackground = OnBackground,
     surface = SurfaceHigh,
+    surfaceVariant = SurfaceOpacity80,
+    surfaceContainerLow = SurfaceLow,
+    surfaceContainerLowest = SurfaceLowest,
+    surfaceContainerHigh = SurfaceHigh,
     onSurface = OnSurface,
-    surfaceVariant = SurfaceLow,
     onSurfaceVariant = OnSurfaceVariant
 )
 
 @Composable
 fun ScribbleDashTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // Disabled by default to use our custom colors
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = Background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )
