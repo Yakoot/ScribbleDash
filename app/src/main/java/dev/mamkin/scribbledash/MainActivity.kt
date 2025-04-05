@@ -18,7 +18,7 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
-import dev.mamkin.scribbledash.presentation.navigation.BottomBar
+import dev.mamkin.scribbledash.ui.components.AppBottomBar
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         if (isBottomBarVisible) {
-                            BottomBar(navController)
+                            AppBottomBar(navController)
                         }
                     },
                     contentWindowInsets = WindowInsets.safeDrawing

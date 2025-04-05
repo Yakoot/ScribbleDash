@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.navigation
+package dev.mamkin.scribbledash.ui.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -11,7 +11,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
-import com.ramcosta.composedestinations.generated.destinations.StatisticsRootDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
@@ -20,7 +19,7 @@ import com.ramcosta.composedestinations.utils.startDestination
 import dev.mamkin.scribbledash.R
 
 @Composable
-fun BottomBar(
+fun AppBottomBar(
     navController: NavHostController
 ) {
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
@@ -46,6 +45,7 @@ fun BottomBar(
                     )
                 },
                 selected = isSelected,
+                enabled = destination.enabled,
                 onClick = {
                     destinationsNavigator.navigate(destination.direction) {
                         launchSingleTop = true
@@ -59,7 +59,8 @@ fun BottomBar(
 enum class BottomBarDestination(
     val direction: DirectionDestinationSpec,
     val icon: Int,
+    val enabled: Boolean = true
 ) {
-    Statistics(StatisticsRootDestination, R.drawable.ic_statistics),
+    Statistics(HomeRootDestination, R.drawable.ic_statistics, false),
     Home(HomeRootDestination, R.drawable.ic_home),
 }

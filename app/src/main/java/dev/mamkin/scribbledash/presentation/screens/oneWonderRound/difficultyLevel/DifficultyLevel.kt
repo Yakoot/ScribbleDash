@@ -19,14 +19,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
@@ -43,13 +40,9 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 )
 @Composable
 fun DifficultyLevelRoot(
-    viewModel: DifficultyLevelViewModel = viewModel(),
     navigator: DestinationsNavigator
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
     DifficultyLevelScreen(
-        state = state,
         onClose = {
             navigator.popBackStack(
                 route = HomeRootDestination,
@@ -64,7 +57,6 @@ fun DifficultyLevelRoot(
 
 @Composable
 fun DifficultyLevelScreen(
-    state: DifficultyLevelState,
     onClose: () -> Unit,
     onLevelClick: (DifficultyLevel) -> Unit = {}
 ) {
@@ -202,7 +194,6 @@ private fun LevelSelectorPreview() {
 private fun Preview() {
     ScribbleDashTheme {
         DifficultyLevelScreen(
-            state = DifficultyLevelState(),
             onClose = {}
         )
     }
