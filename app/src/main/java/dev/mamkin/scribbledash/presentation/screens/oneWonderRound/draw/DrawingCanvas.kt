@@ -1,12 +1,10 @@
 package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -33,8 +31,8 @@ fun DrawingCanvas(
         modifier = modifier
             .pointerInput(true) {
                 detectDragGestures(
-                    onDragStart = {
-                        onAction(DrawAction.OnNewPathStart)
+                    onDragStart = { it ->
+                        onAction(DrawAction.OnNewPathStart(it))
                     },
                     onDragEnd = {
                         onAction(DrawAction.OnPathEnd)
@@ -117,6 +115,7 @@ private fun DrawScope.drawPath(
                 val to = path[i]
                 val dx = abs(from.x - to.x)
                 val dy = abs(from.y - to.y)
+
                 if(dx >= smoothness || dy >= smoothness) {
                     quadraticTo(
                         x1 = (from.x + to.x) / 2f,

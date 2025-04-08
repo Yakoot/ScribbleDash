@@ -1,7 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +31,7 @@ class DrawViewModel : ViewModel() {
         when(action) {
             DrawAction.OnClearCanvasClick -> onClearCanvasClick()
             is DrawAction.OnDraw -> onDraw(action.offset)
-            DrawAction.OnNewPathStart -> onNewPathStart()
+            is DrawAction.OnNewPathStart -> onNewPathStart(action.offset)
             DrawAction.OnPathEnd -> onPathEnd()
             DrawAction.OnRedo -> onRedo()
             DrawAction.OnUndo -> onUndo()
@@ -50,12 +49,12 @@ class DrawViewModel : ViewModel() {
         ) }
     }
 
-    private fun onNewPathStart() {
+    private fun onNewPathStart(offset: Offset) {
         _state.update { it.copy(
             currentPath = PathData(
                 id = System.currentTimeMillis().toString(),
                 color = it.selectedColor,
-                path = emptyList()
+                path = listOf(offset)
             )
         ) }
     }

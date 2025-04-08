@@ -1,10 +1,9 @@
 package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 
 sealed interface DrawAction {
-    data object OnNewPathStart: DrawAction
+    data class OnNewPathStart(val offset: Offset): DrawAction
     data class OnDraw(val offset: Offset): DrawAction
     data object OnPathEnd: DrawAction
     data object OnUndo: DrawAction
