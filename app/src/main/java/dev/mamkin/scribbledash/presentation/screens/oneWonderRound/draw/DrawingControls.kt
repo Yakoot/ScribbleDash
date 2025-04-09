@@ -68,8 +68,7 @@ fun DrawingControls(
             enabled = state.isRedoEnabled
         ) {
             Icon(
-                modifier = Modifier.graphicsLayer { rotationY = 180f },
-                painter = painterResource(R.drawable.ic_undo),
+                painter = painterResource(R.drawable.ic_redo),
                 contentDescription = "Redo"
             )
         }
