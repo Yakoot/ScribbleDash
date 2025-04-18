@@ -89,9 +89,9 @@ fun DrawScreen(
                     .padding(horizontal = 29.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(126.dp))
+                Spacer(modifier = Modifier.height(53.dp))
                 Text(
-                    text = "Start drawing!",
+                    text = "Time to draw!",
                     style = MaterialTheme.typography.displayMedium,
                     color = OnBackground
                 )

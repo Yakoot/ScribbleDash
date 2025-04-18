@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.ComingSoonRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
@@ -61,6 +62,6 @@ enum class BottomBarDestination(
     val icon: Int,
     val enabled: Boolean = true
 ) {
-    Statistics(HomeRootDestination, R.drawable.ic_statistics, false),
+    ComingSoon(ComingSoonRootDestination, R.drawable.ic_statistics),
     Home(HomeRootDestination, R.drawable.ic_home),
 }
