@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,6 +33,7 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw.DrawingCanvas
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
@@ -40,13 +41,13 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 
 @Destination<OneRoundWonderGraph>
 @Composable
-fun DrawRoot(
-    viewModel: DrawViewModel = viewModel(),
+fun PreviewRoot(
+    viewModel: PreviewViewModel = viewModel(),
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    DrawScreen(
+    PreviewScreen(
         state = state,
         onClose = {
             navigator.popBackStack(
@@ -59,10 +60,10 @@ fun DrawRoot(
 }
 
 @Composable
-fun DrawScreen(
-    state: DrawState,
+fun PreviewScreen(
+    state: PreviewState,
     onClose: () -> Unit,
-    onAction: (DrawAction) -> Unit = {}
+    onAction: (PreviewAction) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -113,18 +114,16 @@ fun DrawScreen(
                             .clip(RoundedCornerShape(36.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh), // important! same background
                         paths = state.paths,
-                        currentPath = state.currentPath,
-                        onAction = onAction
+                        onAction = {}
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Your Drawing",
+                    text = "Example",
                     style = MaterialTheme.typography.labelSmall,
                     color = OnSurface
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                DrawingControls(onAction = onAction, state = state)
                 Spacer(modifier = Modifier.height(24.dp))
 
             }
@@ -132,15 +131,14 @@ fun DrawScreen(
     }
 }
 
-
-
 @Preview
 @Composable
 private fun Preview() {
     ScribbleDashTheme {
-        DrawScreen(
-            state = DrawState(),
-            onClose = {}
+        PreviewScreen(
+            state = PreviewState(),
+            onClose = {},
+            onAction = {}
         )
     }
 }

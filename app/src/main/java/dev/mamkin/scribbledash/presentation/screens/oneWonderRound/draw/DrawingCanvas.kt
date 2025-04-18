@@ -21,7 +21,7 @@ import kotlin.math.abs
 @Composable
 fun DrawingCanvas(
     paths: List<PathData>,
-    currentPath: PathData?,
+    currentPath: PathData? = null,
     onAction: (DrawAction) -> Unit,
     modifier: Modifier = Modifier
 ) {

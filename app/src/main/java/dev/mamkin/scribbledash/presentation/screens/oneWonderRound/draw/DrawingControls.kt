@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -22,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +73,8 @@ fun DrawingControls(
                 contentDescription = "Redo"
             )
         }
-        ClearCanvasButton(
+        Spacer(modifier = Modifier.weight(1f))
+        DoneButton(
             onClick = { onAction(DrawAction.OnClearCanvasClick) },
             enabled = state.isClearEnabled
 
@@ -81,7 +83,7 @@ fun DrawingControls(
 }
 
 @Composable
-fun ClearCanvasButton(
+fun DoneButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean
@@ -99,7 +101,7 @@ fun ClearCanvasButton(
         onClick = onClick,
         border = BorderStroke(8.dp, MaterialTheme.colorScheme.surfaceContainerHigh),
         modifier = modifier
-            .fillMaxWidth()
+            .width(124.dp)
             .height(64.dp)
     ) {
         Box(
@@ -108,7 +110,7 @@ fun ClearCanvasButton(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "CLEAR CANVAS",
+                text = "DONE",
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.headlineSmall
             )
@@ -124,11 +126,11 @@ private fun ClearCanvasButtonPreview() {
             modifier = Modifier.background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ClearCanvasButton(
+            DoneButton(
                 onClick = {},
                 enabled = true
             )
-            ClearCanvasButton(
+            DoneButton(
                 onClick = {},
                 enabled = false
             )
