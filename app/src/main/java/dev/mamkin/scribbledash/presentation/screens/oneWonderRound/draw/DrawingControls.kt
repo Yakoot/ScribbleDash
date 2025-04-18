@@ -75,9 +75,8 @@ fun DrawingControls(
         }
         Spacer(modifier = Modifier.weight(1f))
         DoneButton(
-            onClick = { onAction(DrawAction.OnClearCanvasClick) },
-            enabled = state.isClearEnabled
-
+            onClick = { onAction(DrawAction.OnDoneClick) },
+            enabled = state.isDoneEnabled
         )
     }
 }
@@ -155,7 +154,7 @@ private fun DrawControlsPreview() {
                 state = DrawState(
                     isRedoEnabled = true,
                     isUndoEnabled = true,
-                    isClearEnabled = true
+                    isDoneEnabled = true
                 )
             )
         }

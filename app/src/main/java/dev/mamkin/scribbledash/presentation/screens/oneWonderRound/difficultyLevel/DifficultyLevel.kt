@@ -26,8 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.PreviewRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
@@ -51,7 +51,7 @@ fun DifficultyLevelRoot(
             )
         },
         onLevelClick = {
-            navigator.navigate(DrawRootDestination)
+            navigator.navigate(PreviewRootDestination)
         }
     )
 }

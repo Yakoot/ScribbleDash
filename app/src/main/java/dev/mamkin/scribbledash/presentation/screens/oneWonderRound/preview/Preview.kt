@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,11 +25,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
@@ -46,6 +49,15 @@ fun PreviewRoot(
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is UiEvent.NavigateToDraw -> {
+                    navigator.navigate(DrawRootDestination)
+                }
+            }
+        }
+    }
 
     PreviewScreen(
         state = state,
@@ -93,7 +105,7 @@ fun PreviewScreen(
             ) {
                 Spacer(modifier = Modifier.height(53.dp))
                 Text(
-                    text = "Time to draw!",
+                    text = "Ready, set...",
                     style = MaterialTheme.typography.displayMedium,
                     color = OnBackground
                 )
@@ -124,7 +136,17 @@ fun PreviewScreen(
                     color = OnSurface
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Spacer(modifier = Modifier.height(24.dp))
+                val text = pluralStringResource(
+                    id    = R.plurals.seconds_left,
+                    count = state.secondsLeft,
+                    state.secondsLeft
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = OnBackground
+                )
+                Spacer(modifier = Modifier.height(41.dp))
 
             }
         }

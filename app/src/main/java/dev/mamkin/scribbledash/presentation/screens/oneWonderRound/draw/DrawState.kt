@@ -8,7 +8,7 @@ data class DrawState(
     val currentPath: PathData? = null,
     val paths: List<PathData> = emptyList(),
     val redoPaths: List<PathData> = emptyList(),
-    val isClearEnabled: Boolean = false,
+    val isDoneEnabled: Boolean = false,
     val isUndoEnabled: Boolean = false,
     val isRedoEnabled: Boolean = false
 )

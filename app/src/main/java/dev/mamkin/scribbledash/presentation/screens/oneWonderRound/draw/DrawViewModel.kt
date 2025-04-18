@@ -29,7 +29,7 @@ class DrawViewModel : ViewModel() {
 
     fun onAction(action: DrawAction) {
         when(action) {
-            DrawAction.OnClearCanvasClick -> onClearCanvasClick()
+            DrawAction.OnDoneClick -> onDoneClick()
             is DrawAction.OnDraw -> onDraw(action.offset)
             is DrawAction.OnNewPathStart -> onNewPathStart(action.offset)
             DrawAction.OnPathEnd -> onPathEnd()
@@ -43,7 +43,7 @@ class DrawViewModel : ViewModel() {
         _state.update { it.copy(
             currentPath = null,
             paths = it.paths + currentPathData,
-            isClearEnabled = true,
+            isDoneEnabled = true,
             isUndoEnabled = true,
             isRedoEnabled = false
         ) }
@@ -68,14 +68,14 @@ class DrawViewModel : ViewModel() {
         ) }
     }
 
-    private fun onClearCanvasClick() {
-        _state.update { it.copy(
-            currentPath = null,
-            paths = emptyList(),
-            isClearEnabled = false,
-            isUndoEnabled = false,
-            isRedoEnabled = false
-        ) }
+    private fun onDoneClick() {
+//        _state.update { it.copy(
+//            currentPath = null,
+//            paths = emptyList(),
+//            isDoneEnabled = false,
+//            isUndoEnabled = false,
+//            isRedoEnabled = false
+//        ) }
     }
 
     private fun onUndo() {
@@ -90,7 +90,7 @@ class DrawViewModel : ViewModel() {
                 redoPaths = newRedoPaths,
                 isRedoEnabled = newRedoPaths.isNotEmpty(),
                 isUndoEnabled = newPaths.isNotEmpty(),
-                isClearEnabled = newPaths.isNotEmpty()
+                isDoneEnabled = newPaths.isNotEmpty()
             )
         }
     }
@@ -107,7 +107,7 @@ class DrawViewModel : ViewModel() {
                 redoPaths = newRedoPaths,
                 isRedoEnabled = newRedoPaths.isNotEmpty(),
                 isUndoEnabled = newPaths.isNotEmpty(),
-                isClearEnabled = newPaths.isNotEmpty()
+                isDoneEnabled = newPaths.isNotEmpty()
             )
         }
     }

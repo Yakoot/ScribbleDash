@@ -8,5 +8,5 @@ sealed interface DrawAction {
     data object OnPathEnd: DrawAction
     data object OnUndo: DrawAction
     data object OnRedo: DrawAction
-    data object OnClearCanvasClick: DrawAction
+    data object OnDoneClick: DrawAction
 }
