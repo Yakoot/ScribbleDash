@@ -35,6 +35,7 @@ class DrawViewModel : ViewModel() {
             DrawAction.OnPathEnd -> onPathEnd()
             DrawAction.OnRedo -> onRedo()
             DrawAction.OnUndo -> onUndo()
+            else -> Unit
         }
     }
 

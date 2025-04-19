@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,12 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw.DrawingCanvas
+import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw.DrawAction
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
@@ -53,10 +53,14 @@ fun PreviewRoot(
         viewModel.events.collect { event ->
             when (event) {
                 is UiEvent.NavigateToDraw -> {
-                    navigator.navigate(DrawRootDestination)
+//                    navigator.navigate(DrawRootDestination)
                 }
             }
         }
+    }
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.loadPreviewImages(context)
     }
 
     PreviewScreen(
@@ -67,7 +71,10 @@ fun PreviewRoot(
                 inclusive = false
             )
         },
-        onAction = viewModel::onAction
+        onAction = { action -> 
+            // Перенаправляем действия в ViewModel
+            viewModel.onAction(action) 
+        }
     )
 }
 
@@ -75,7 +82,7 @@ fun PreviewRoot(
 fun PreviewScreen(
     state: PreviewState,
     onClose: () -> Unit,
-    onAction: (PreviewAction) -> Unit,
+    onAction: (DrawAction) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -119,14 +126,13 @@ fun PreviewScreen(
                         .clip(RoundedCornerShape(36.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 ) {
-                    DrawingCanvas(
+                    PreviewCanvas(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(12.dp)
-                            .clip(RoundedCornerShape(36.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh), // important! same background
-                        paths = state.paths,
-                        onAction = {}
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                        images = state.images
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
