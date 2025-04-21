@@ -1,6 +1,5 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
-import android.content.Context
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
@@ -13,7 +12,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.preview.ImageData
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -99,7 +98,7 @@ fun Modifier.drawGrid(
     }
 }
 
-fun DrawScope.drawRandomVectorOnCanvas(context: Context, images: List<ImageData>) {
+fun DrawScope.drawRandomVectorOnCanvas(images: List<ImageData>) {
     // Exit early if the list is empty
     if (images.isEmpty()) {
         println("Warning: No images provided to drawRandomVectorOnCanvas.")
@@ -129,19 +128,16 @@ fun DrawScope.drawRandomVectorOnCanvas(context: Context, images: List<ImageData>
     val translateX = (canvasWidth - scaledWidth) / 2f
     val translateY = (canvasHeight - scaledHeight) / 2f
 
-    // Apply transformations: translate then scale
     withTransform({
         translate(left = translateX, top = translateY)
-        // Scale relative to the top-left corner after translation
         scale(scaleX = scale, scaleY = scale, pivot = Offset.Zero)
     }) {
-        // Draw each path from the selected image data
         vectorData.paths.forEach { path ->
             drawPath(
                 path = path,
-                color = Color.Black, // Or use a color from the theme/state
+                color = Color.Black,
                 style = Stroke(
-                    width = 2f, // Use a fixed stroke width or scale it?
+                    width = 2f,
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )

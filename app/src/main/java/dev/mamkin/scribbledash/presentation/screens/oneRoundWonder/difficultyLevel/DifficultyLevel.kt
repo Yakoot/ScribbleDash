@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.difficultyLevel
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,7 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.generated.destinations.PreviewRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
@@ -51,7 +51,7 @@ fun DifficultyLevelRoot(
             )
         },
         onLevelClick = {
-            navigator.navigate(PreviewRootDestination)
+            navigator.navigate(PreviewRootDestination(it))
         }
     )
 }
@@ -148,10 +148,10 @@ fun LevelSelector(
     }
 }
 
-enum class DifficultyLevel {
-    Beginner,
-    Challenging,
-    Master
+enum class DifficultyLevel(multiplier: Int) {
+    Beginner(14),
+    Challenging(7),
+    Master(2)
 }
 
 data class Level(

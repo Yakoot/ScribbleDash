@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.preview
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
 import dev.mamkin.scribbledash.R
 import kotlin.random.Random

@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -37,6 +37,7 @@ fun DrawingCanvas(
                 )
             }
     ) {
+        onAction(DrawAction.OnCanvasSizeChanged(size))
         paths.fastForEach { pathData ->
             drawPath(
                 path = pathData.path,

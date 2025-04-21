@@ -10,6 +10,7 @@ activityCompose = "1.10.1"
 composeBom = "2025.03.01"
 kspVersion = "2.1.20-1.0.32"
 composeDestinations = "2.1.0"
+koinBomVersion = "4.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +29,11 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-destinations = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "composeDestinations" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "composeDestinations" }
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koinBomVersion" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

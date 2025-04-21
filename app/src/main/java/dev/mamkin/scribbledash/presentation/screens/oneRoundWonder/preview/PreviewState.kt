@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.preview
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
 data class PreviewState(
     val images: List<ImageData> = emptyList(),

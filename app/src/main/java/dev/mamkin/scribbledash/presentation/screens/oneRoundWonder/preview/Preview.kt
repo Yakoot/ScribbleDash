@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.preview
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,11 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw.DrawAction
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.DrawAction
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
@@ -45,6 +47,7 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 @Destination<OneRoundWonderGraph>
 @Composable
 fun PreviewRoot(
+    level: DifficultyLevel,
     viewModel: PreviewViewModel = viewModel(),
     navigator: DestinationsNavigator
 ) {
@@ -53,7 +56,7 @@ fun PreviewRoot(
         viewModel.events.collect { event ->
             when (event) {
                 is UiEvent.NavigateToDraw -> {
-//                    navigator.navigate(DrawRootDestination)
+                    navigator.navigate(DrawRootDestination(level))
                 }
             }
         }
@@ -153,7 +156,6 @@ fun PreviewScreen(
                     color = OnBackground
                 )
                 Spacer(modifier = Modifier.height(41.dp))
-
             }
         }
     }

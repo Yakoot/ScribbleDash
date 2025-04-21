@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,21 +27,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @Destination<OneRoundWonderGraph>
 @Composable
 fun DrawRoot(
-    viewModel: DrawViewModel = viewModel(),
+    level: DifficultyLevel,
+    viewModel: DrawViewModel = koinViewModel(),
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

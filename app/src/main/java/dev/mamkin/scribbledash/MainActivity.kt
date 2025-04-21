@@ -18,13 +18,26 @@ import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
+import dev.mamkin.scribbledash.di.appModule
 import dev.mamkin.scribbledash.ui.components.AppBottomBar
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 100
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        startKoin {
+            androidContext(application)
+            modules(appModule)
+        }
+        
         setContent {
             ScribbleDashTheme {
                 val navController = rememberNavController()

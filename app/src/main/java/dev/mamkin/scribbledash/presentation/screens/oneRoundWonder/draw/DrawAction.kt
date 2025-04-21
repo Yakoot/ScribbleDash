@@ -1,6 +1,5 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
-import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 
@@ -12,6 +11,5 @@ sealed interface DrawAction {
     data object OnRedo: DrawAction
     data object OnDoneClick: DrawAction
     
-    // Новое действие для передачи размера холста
-    data class OnCanvasSizeChanged(val size: Size, val context: Context): DrawAction
+    data class OnCanvasSizeChanged(val size: Size): DrawAction
 }

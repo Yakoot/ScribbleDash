@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
