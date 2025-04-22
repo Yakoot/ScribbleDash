@@ -34,18 +34,21 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Destination<OneRoundWonderGraph>
 @Composable
 fun PreviewRoot(
-    viewModel: PreviewViewModel = koinViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    gameViewModel: GameViewModel,
+    viewModel: PreviewViewModel = koinViewModel { parametersOf(gameViewModel) }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel.events) {

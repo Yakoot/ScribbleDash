@@ -1,32 +1,24 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
-import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import dev.mamkin.scribbledash.data.repository.GameRepository
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.PathData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawPath
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawVectorOnCanvas
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewImages
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserException
-import java.io.IOException
 import kotlin.random.Random
 
 // Base stroke width assumed for user drawings when calculating example thickness
@@ -36,8 +28,8 @@ const val BASE_USER_STROKE_WIDTH = 1f
  * ViewModel для управления игровым процессом, включая выбор случайного изображения
  */
 class GameViewModel(
-    private val context: Context
-) : ViewModel(), KoinComponent {
+    private val gameRepository: GameRepository
+) : ViewModel() {
     
     private var cachedImages: List<ImageData>? = null
     private var userDrawing: List<PathData>? = null
@@ -46,21 +38,19 @@ class GameViewModel(
     private var currentImage: ImageData? = null
 
     init {
-        viewModelScope.launch {
-            preloadImagesToCache()
-        }
+        Log.d("ViewModelScope", "GameViewModel INIT, hashCode: ${this.hashCode()}")
     }
     
     /**
      * Preloads images into the cache without updating the main state flow immediately.
      */
-    private suspend fun preloadImagesToCache() {
+    suspend fun preloadImagesToCache() {
         if (cachedImages != null) return // Already cached/preloaded
 
         Log.d("GameViewModel", "Preloading images into cache...")
         val images = PreviewImages.entries.mapNotNull { entry ->
             try {
-                getImageData(context, entry.resourceId)
+                gameRepository.getImageData(entry.resourceId)
             } catch (e: Exception) {
                 Log.e("GameViewModel", "Failed to preload image data for resource ID: ${entry.resourceId}", e)
                 null
@@ -77,6 +67,7 @@ class GameViewModel(
      * Устанавливает уровень сложности
      */
     fun setDifficultyLevel(level: DifficultyLevel) {
+        Log.d("GameViewModel", "Difficulty level set to: $level")
         this.difficultyLevel = level
     }
     
@@ -116,8 +107,10 @@ class GameViewModel(
             return
         }
 
+        Log.d("GameViewModel", "Generating example bitmap... difficultyLevel = $difficultyLevel")
+
         // Determine thickness multiplier based on difficulty
-        val thicknessMultiplier = when (this.difficultyLevel ?: DifficultyLevel.Beginner) {
+        val thicknessMultiplier = when (difficultyLevel ?: DifficultyLevel.Beginner) {
             DifficultyLevel.Beginner -> 15f
             DifficultyLevel.Challenging -> 7f
             DifficultyLevel.Master -> 4f
@@ -131,7 +124,7 @@ class GameViewModel(
 
         // Pass the modified image data to the drawing function
         val bitmap = drawExampleToBitmap(imageWithModifiedThickness, canvasSize).asAndroidBitmap()
-        saveBitmapToFile(bitmap, "example_${System.currentTimeMillis()}.jpg")
+        gameRepository.saveBitmapToFile(bitmap, "example_${System.currentTimeMillis()}.jpg")
     }
     
     /**
@@ -151,7 +144,7 @@ class GameViewModel(
         Log.d("GameViewModel", "Loading images on demand (cache was empty).")
         val images = PreviewImages.entries.mapNotNull { entry ->
             try {
-                getImageData(context, entry.resourceId)
+                gameRepository.getImageData(entry.resourceId)
             } catch (e: Exception) {
                 Log.e("GameViewModel", "Failed to load image data for resource ID: ${entry.resourceId}", e)
                 null
@@ -164,68 +157,6 @@ class GameViewModel(
 
         cachedImages = images
         return images
-    }
-
-    @Throws(IOException::class, XmlPullParserException::class)
-    private fun getImageData(context: Context, idRes: Int): ImageData {
-        val parser = context.resources.getXml(idRes)
-        var eventType = parser.eventType
-        var viewportWidth = 0f
-        var viewportHeight = 0f
-        val paths = mutableListOf<Path>()
-        val pathParser = PathParser()
-
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            when (eventType) {
-                XmlPullParser.START_TAG -> {
-                    when (parser.name) {
-                        "vector" -> {
-                            viewportWidth = parser.getAttributeValue(
-                                "http://schemas.android.com/apk/res/android",
-                                "viewportWidth"
-                            )?.toFloatOrNull() ?: 0f
-                            viewportHeight = parser.getAttributeValue(
-                                "http://schemas.android.com/apk/res/android",
-                                "viewportHeight"
-                            )?.toFloatOrNull() ?: 0f
-                        }
-                        "path" -> {
-                            val pathData = parser.getAttributeValue(
-                                "http://schemas.android.com/apk/res/android",
-                                "pathData"
-                            )
-                            if (pathData != null) {
-                                paths.add(pathParser.parsePathString(pathData).toPath())
-                            }
-                        }
-                    }
-                }
-            }
-            eventType = parser.next()
-        }
-        parser.close() // Закрываем парсер
-
-        return ImageData(
-            viewportWidth = viewportWidth,
-            viewportHeight = viewportHeight,
-            paths = paths
-        )
-    }
-
-    private fun saveBitmapToFile(bitmap: android.graphics.Bitmap, fileName: String): String? {
-        return try {
-            val imagesDir = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)
-            val outputFile = java.io.File(imagesDir, fileName)
-
-            outputFile.outputStream().use { outputStream ->
-                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, outputStream)
-            }
-
-            outputFile.absolutePath
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
     }
 
     fun saveUserDrawing(data: List<PathData>) {

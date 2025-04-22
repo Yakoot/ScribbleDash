@@ -41,8 +41,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Destination<OneRoundWonderGraph>
 @Composable
 fun DrawRoot(
+    navigator: DestinationsNavigator,
     viewModel: DrawViewModel = koinViewModel(),
-    navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

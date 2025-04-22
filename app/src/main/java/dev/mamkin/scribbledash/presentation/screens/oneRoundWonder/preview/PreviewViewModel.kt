@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
@@ -17,11 +18,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class PreviewViewModel : ViewModel(), KoinComponent {
-
-    private val gameViewModel: GameViewModel by inject()
+class PreviewViewModel(
+    private val gameViewModel: GameViewModel
+) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
     private var countdownStarted = false
@@ -45,6 +45,10 @@ class PreviewViewModel : ViewModel(), KoinComponent {
             initialValue = PreviewState()
         )
 
+    init {
+        Log.d("ViewModelScope", "PreviewViewModel INIT, injected GameViewModel hashCode: ${gameViewModel.hashCode()}")
+    }
+
     private fun startCountdown() = viewModelScope.launch {
         if (countdownStarted) return@launch // Ensure countdown starts only once
         countdownStarted = true
@@ -53,7 +57,7 @@ class PreviewViewModel : ViewModel(), KoinComponent {
         for (sec in start downTo 0) {
             _state.update { it.copy(secondsLeft = sec) }
             if (sec == 0) {
-                gameViewModel.generateAndSaveExampleBitmap() // Generate bitmap just before navigating
+                gameViewModel.generateAndSaveExampleBitmap()
                 _events.send(UiEvent.NavigateToDraw)
                 return@launch
             }

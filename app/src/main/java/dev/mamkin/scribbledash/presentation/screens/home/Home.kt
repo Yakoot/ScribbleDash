@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
+import com.ramcosta.composedestinations.generated.destinations.DifficultyLevelRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientEnd
@@ -39,7 +39,7 @@ fun HomeRoot(
 ) {
     HomeScreen(
         onOneRoundWonderClick = {
-            navigator.navigate(OneRoundWonderNavGraph)
+            navigator.navigate(DifficultyLevelRootDestination)
         }
     )
 }

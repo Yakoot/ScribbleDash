@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,8 +21,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,16 +39,20 @@ import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
-import org.koin.compose.viewmodel.koinViewModel
 
 @Destination<OneRoundWonderGraph>(
     start = true
 )
 @Composable
 fun DifficultyLevelRoot(
+    gameViewModel: GameViewModel,
     navigator: DestinationsNavigator,
-    gameViewModel: GameViewModel = koinViewModel()
 ) {
+    Log.d("GameViewModel", "gameViewModel instance = $gameViewModel")
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        gameViewModel.preloadImagesToCache()
+    }
     DifficultyLevelScreen(
         onClose = {
             navigator.popBackStack(
@@ -153,9 +160,9 @@ fun LevelSelector(
 }
 
 enum class DifficultyLevel(val multiplier: Int) {
-    Beginner(14),
+    Beginner(15),
     Challenging(7),
-    Master(2)
+    Master(4)
 }
 
 data class Level(

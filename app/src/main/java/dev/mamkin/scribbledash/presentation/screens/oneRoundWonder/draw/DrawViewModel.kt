@@ -10,11 +10,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class DrawViewModel() : ViewModel(), KoinComponent {
-
-    private val gameViewModel: GameViewModel by inject()
+class DrawViewModel(
+    private val gameViewModel: GameViewModel
+) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
 
