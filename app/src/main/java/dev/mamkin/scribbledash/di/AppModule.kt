@@ -9,9 +9,13 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModel { DrawViewModel(get()) }
     viewModel { GameViewModel(get()) }
-    viewModel { (gameViewModel: GameViewModel) -> PreviewViewModel(gameViewModel) }
+    viewModel { (gameViewModel: GameViewModel) ->
+        PreviewViewModel(gameViewModel)
+    }
+    viewModel { (gameViewModel: GameViewModel) ->
+        DrawViewModel(gameViewModel)
+    }
 
     single { GameRepository(androidContext()) }
 }
