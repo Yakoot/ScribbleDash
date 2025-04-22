@@ -1,7 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 
 sealed interface DrawAction {
     data class OnNewPathStart(val offset: Offset): DrawAction
@@ -10,6 +9,4 @@ sealed interface DrawAction {
     data object OnUndo: DrawAction
     data object OnRedo: DrawAction
     data object OnDoneClick: DrawAction
-    
-    data class OnCanvasSizeChanged(val size: Size): DrawAction
 }

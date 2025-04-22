@@ -67,7 +67,7 @@ fun Modifier.drawGrid(
         color = color,
         size = size,
         cornerRadius = CornerRadius(cornerRadius, cornerRadius),
-        style = Stroke(width = 2.dp.toPx()) // only stroke, not fill
+        style = Stroke(width = 2.dp.toPx())
     )
 
     val thirdWidth = canvasWidth / 3
@@ -98,31 +98,19 @@ fun Modifier.drawGrid(
     }
 }
 
-fun DrawScope.drawRandomVectorOnCanvas(images: List<ImageData>) {
-    // Exit early if the list is empty
-    if (images.isEmpty()) {
-        println("Warning: No images provided to drawRandomVectorOnCanvas.")
-        return
-    }
-
-    // Pick a random image from the list
-    val vectorData = images[Random.nextInt(images.size)]
-
-    val canvasWidth = size.width
-    val canvasHeight = size.height
-
-    // Ensure viewport dimensions are not zero to avoid division by zero
+fun DrawScope.drawVectorOnCanvas(vectorData: ImageData) {
     if (vectorData.viewportWidth <= 0f || vectorData.viewportHeight <= 0f) {
         println("Warning: Invalid viewport dimensions for the selected image.")
         return
     }
 
-    // Calculate scale factors
+    val canvasWidth = size.width
+    val canvasHeight = size.height
+
     val scaleX = canvasWidth / vectorData.viewportWidth
     val scaleY = canvasHeight / vectorData.viewportHeight
-    val scale = scaleX.coerceAtMost(scaleY) // Use the smaller scale factor to fit the image
+    val scale = scaleX.coerceAtMost(scaleY)
 
-    // Calculate translation to center the image
     val scaledWidth = vectorData.viewportWidth * scale
     val scaledHeight = vectorData.viewportHeight * scale
     val translateX = (canvasWidth - scaledWidth) / 2f
@@ -137,11 +125,20 @@ fun DrawScope.drawRandomVectorOnCanvas(images: List<ImageData>) {
                 path = path,
                 color = Color.Black,
                 style = Stroke(
-                    width = 2f,
+                    width = vectorData.thickness,
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )
             )
         }
     }
+}
+
+fun DrawScope.drawRandomVectorOnCanvas(images: List<ImageData>) {
+    if (images.isEmpty()) {
+        println("Warning: No images provided to drawRandomVectorOnCanvas.")
+        return
+    }
+    val vectorData = images[Random.nextInt(images.size)]
+    drawVectorOnCanvas(vectorData)
 }

@@ -1,30 +1,22 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
-import android.content.Context
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class DrawViewModel(
-    private val context: Context
-) : ViewModel() {
+class DrawViewModel() : ViewModel(), KoinComponent {
+
+    private val gameViewModel: GameViewModel by inject()
 
     private var hasLoadedInitialData = false
-    private var size = Size(1000f, 1000f)
 
     private val _state = MutableStateFlow(DrawState())
     val state = _state
@@ -48,9 +40,6 @@ class DrawViewModel(
             DrawAction.OnPathEnd -> onPathEnd()
             DrawAction.OnRedo -> onRedo()
             DrawAction.OnUndo -> onUndo()
-            is DrawAction.OnCanvasSizeChanged -> {
-                size = action.size
-            }
         }
     }
 
@@ -86,8 +75,7 @@ class DrawViewModel(
 
     private fun onDoneClick() {
         val paths = _state.value.paths
-        val image = drawToBitmap(paths, size).asAndroidBitmap()
-        saveBitmapToFile(image, "scribble_${System.currentTimeMillis()}.jpg")
+        gameViewModel.saveUserDrawing(paths)
     }
 
     private fun onUndo() {
@@ -123,45 +111,4 @@ class DrawViewModel(
             )
         }
     }
-
-    private fun saveBitmapToFile(bitmap: android.graphics.Bitmap, fileName: String): String? {
-        return try {
-            val imagesDir = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)
-            val outputFile = java.io.File(imagesDir, fileName)
-            
-            outputFile.outputStream().use { outputStream ->
-                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, outputStream)
-            }
-            
-            outputFile.absolutePath
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-}
-
-
-fun drawToBitmap(paths: List<PathData>, size: Size): ImageBitmap {
-    val drawScope = CanvasDrawScope()
-    val bitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
-    val canvas = Canvas(bitmap)
-
-    drawScope.draw(
-        density = Density(1f),
-        layoutDirection = LayoutDirection.Ltr,
-        canvas = canvas,
-        size = size,
-    ) {
-        // Draw whatever you want here; for instance, a white background and a red line.
-        drawRect(color = Color.White, topLeft = Offset.Zero, size = size)
-        paths.fastForEach { pathData ->
-            drawPath(
-                path = pathData.path,
-                color = pathData.color,
-                thickness = 140f
-            )
-        }
-    }
-    return bitmap
 }

@@ -32,7 +32,6 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
@@ -42,7 +41,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Destination<OneRoundWonderGraph>
 @Composable
 fun DrawRoot(
-    level: DifficultyLevel,
     viewModel: DrawViewModel = koinViewModel(),
     navigator: DestinationsNavigator
 ) {

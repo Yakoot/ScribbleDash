@@ -30,18 +30,21 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.generated.destinations.PreviewRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @Destination<OneRoundWonderGraph>(
     start = true
 )
 @Composable
 fun DifficultyLevelRoot(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    gameViewModel: GameViewModel = koinViewModel()
 ) {
     DifficultyLevelScreen(
         onClose = {
@@ -51,7 +54,8 @@ fun DifficultyLevelRoot(
             )
         },
         onLevelClick = {
-            navigator.navigate(PreviewRootDestination(it))
+            gameViewModel.setDifficultyLevel(it)
+            navigator.navigate(PreviewRootDestination())
         }
     )
 }
@@ -148,7 +152,7 @@ fun LevelSelector(
     }
 }
 
-enum class DifficultyLevel(multiplier: Int) {
+enum class DifficultyLevel(val multiplier: Int) {
     Beginner(14),
     Challenging(7),
     Master(2)

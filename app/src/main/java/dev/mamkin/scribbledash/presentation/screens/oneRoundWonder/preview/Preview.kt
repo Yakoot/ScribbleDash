@@ -23,32 +23,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.DrawAction
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @Destination<OneRoundWonderGraph>
 @Composable
 fun PreviewRoot(
-    level: DifficultyLevel,
-    viewModel: PreviewViewModel = viewModel(),
+    viewModel: PreviewViewModel = koinViewModel(),
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -56,14 +52,10 @@ fun PreviewRoot(
         viewModel.events.collect { event ->
             when (event) {
                 is UiEvent.NavigateToDraw -> {
-                    navigator.navigate(DrawRootDestination(level))
+//                    navigator.navigate(DrawRootDestination())
                 }
             }
         }
-    }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.loadPreviewImages(context)
     }
 
     PreviewScreen(
@@ -74,10 +66,7 @@ fun PreviewRoot(
                 inclusive = false
             )
         },
-        onAction = { action -> 
-            // Перенаправляем действия в ViewModel
-            viewModel.onAction(action) 
-        }
+        onSizeChanged = viewModel::onSizeChanged
     )
 }
 
@@ -85,7 +74,7 @@ fun PreviewRoot(
 fun PreviewScreen(
     state: PreviewState,
     onClose: () -> Unit,
-    onAction: (DrawAction) -> Unit,
+    onSizeChanged: (Size) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -135,7 +124,8 @@ fun PreviewScreen(
                             .padding(12.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                        images = state.images
+                        image = state.image,
+                        onSizeChanged = onSizeChanged
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
@@ -168,7 +158,7 @@ private fun Preview() {
         PreviewScreen(
             state = PreviewState(),
             onClose = {},
-            onAction = {}
+            onSizeChanged = {}
         )
     }
 }

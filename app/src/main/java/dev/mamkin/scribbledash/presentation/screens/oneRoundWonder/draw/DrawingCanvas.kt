@@ -37,7 +37,6 @@ fun DrawingCanvas(
                 )
             }
     ) {
-        onAction(DrawAction.OnCanvasSizeChanged(size))
         paths.fastForEach { pathData ->
             drawPath(
                 path = pathData.path,
