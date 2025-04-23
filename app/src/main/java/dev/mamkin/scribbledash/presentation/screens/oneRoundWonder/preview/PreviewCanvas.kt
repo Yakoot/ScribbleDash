@@ -12,7 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawGrid
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawVectorOnCanvas
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawVectorOnCanvasForUser
 
 @Composable
 fun PreviewCanvas(
@@ -37,6 +37,6 @@ fun PreviewCanvas(
             .drawGrid(lineColor)
     ) {
         savedSize = size
-        image?.let { drawVectorOnCanvas(it) }
+        image?.let { drawVectorOnCanvasForUser(it) }
     }
 }

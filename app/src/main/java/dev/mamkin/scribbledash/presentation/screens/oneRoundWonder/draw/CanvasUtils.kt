@@ -8,13 +8,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.EXAMPLE_STROKE_WIDTH
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.USER_STROKE_WIDTH
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.calculateTotalBounds
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import kotlin.math.abs
-import kotlin.random.Random
+import kotlin.math.min
+import android.graphics.Path as AndroidPath
 
 internal fun DrawScope.drawPath(
     path: List<Offset>,
@@ -52,6 +57,32 @@ internal fun DrawScope.drawPath(
             join = StrokeJoin.Round
         )
     )
+}
+
+internal fun List<PathData>.createPaths(): List<Path> = map {
+    val path = it.path
+    Path().apply {
+        if(path.isNotEmpty()) {
+            moveTo(path.first().x, path.first().y)
+
+            val smoothness = 5
+            for(i in 1..path.lastIndex) {
+                val from = path[i - 1]
+                val to = path[i]
+                val dx = abs(from.x - to.x)
+                val dy = abs(from.y - to.y)
+
+                if(dx >= smoothness || dy >= smoothness) {
+                    quadraticTo(
+                        x1 = (from.x + to.x) / 2f,
+                        y1 = (from.y + to.y) / 2f,
+                        x2 = to.x,
+                        y2 = to.y
+                    )
+                }
+            }
+        }
+    }
 }
 
 fun Modifier.drawGrid(
@@ -98,7 +129,95 @@ fun Modifier.drawGrid(
     }
 }
 
-fun DrawScope.drawVectorOnCanvas(vectorData: ImageData) {
+fun DrawScope.drawUserVectorOnCanvasForDebug(
+    paths: List<Path>,
+) {
+    val thickness = USER_STROKE_WIDTH
+    val inset = -thickness/2 - (EXAMPLE_STROKE_WIDTH - USER_STROKE_WIDTH)/2
+    val canvasWidth = size.width
+    val canvasHeight = size.height
+
+    val androidPaths: List<AndroidPath> = paths.map { it.asAndroidPath() }
+    val movedPaths = androidPaths.moveToTopLeftCorner(inset, canvasWidth, canvasHeight)
+
+
+    movedPaths.forEach { path ->
+        drawPath(
+            path = path.asComposePath(),
+            color = Color.Black,
+            style = Stroke(
+                width = thickness,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
+    }
+}
+
+// To draw on bitmap
+fun DrawScope.drawExampleVectorOnCanvasForDebug(
+    vectorData: ImageData
+) {
+    if (vectorData.viewportWidth <= 0f || vectorData.viewportHeight <= 0f) {
+        println("Warning: Invalid viewport dimensions for the selected image.")
+        return
+    }
+
+    val inset = -vectorData.thickness / 2f
+
+    val canvasWidth = size.width
+    val canvasHeight = size.height
+
+    val scaleX = canvasWidth / vectorData.viewportWidth
+    val scaleY = canvasHeight / vectorData.viewportHeight
+    val scale = min(scaleX, scaleY)
+    val matrix = android.graphics.Matrix().apply {
+        setScale(scale, scale)
+    }
+
+    val transformed = vectorData.paths.map { orig ->
+        android.graphics.Path(orig).apply {
+            transform(matrix)
+        }
+    }
+
+    val movedPaths = transformed.moveToTopLeftCorner(inset, canvasWidth, canvasHeight)
+
+    movedPaths.forEach { path ->
+        drawPath(
+            path = path.asComposePath(),
+            color = Color.Black,
+            style = Stroke(
+                width = vectorData.thickness,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
+    }
+}
+
+fun List<AndroidPath>.moveToTopLeftCorner(inset: Float, canvasWidth: Float, canvasHeight: Float): List<AndroidPath> {
+    val bounds = calculateTotalBounds(this)
+    bounds.inset(inset, inset)
+
+    val newScaleX = canvasWidth  / bounds.width()
+    val newScaleY = canvasHeight  / bounds.height()
+    val newScale = min(newScaleX, newScaleY)
+
+    val newMatrix = android.graphics.Matrix().apply {
+        setScale(newScale, newScale)
+        postTranslate(-bounds.left * newScale, -bounds.top * newScale)
+    }
+
+    return this.map { original ->
+        AndroidPath(original).apply {
+            transform(newMatrix)
+        }
+    }
+}
+
+// It displays on screen
+fun DrawScope.drawVectorOnCanvasForUser(vectorData: ImageData) {
     if (vectorData.viewportWidth <= 0f || vectorData.viewportHeight <= 0f) {
         println("Warning: Invalid viewport dimensions for the selected image.")
         return
@@ -109,36 +228,26 @@ fun DrawScope.drawVectorOnCanvas(vectorData: ImageData) {
 
     val scaleX = canvasWidth / vectorData.viewportWidth
     val scaleY = canvasHeight / vectorData.viewportHeight
-    val scale = scaleX.coerceAtMost(scaleY)
+    val scale = min(scaleX, scaleY)
+    val matrix = android.graphics.Matrix().apply {
+        setScale(scale, scale)
+    }
 
-    val scaledWidth = vectorData.viewportWidth * scale
-    val scaledHeight = vectorData.viewportHeight * scale
-    val translateX = (canvasWidth - scaledWidth) / 2f
-    val translateY = (canvasHeight - scaledHeight) / 2f
-
-    withTransform({
-        translate(left = translateX, top = translateY)
-        scale(scaleX = scale, scaleY = scale, pivot = Offset.Zero)
-    }) {
-        vectorData.paths.forEach { path ->
-            drawPath(
-                path = path,
-                color = Color.Black,
-                style = Stroke(
-                    width = vectorData.thickness,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round
-                )
-            )
+    val translatedPaths = vectorData.paths.map { original ->
+        AndroidPath(original).apply {
+            transform(matrix)
         }
     }
-}
 
-fun DrawScope.drawRandomVectorOnCanvas(images: List<ImageData>) {
-    if (images.isEmpty()) {
-        println("Warning: No images provided to drawRandomVectorOnCanvas.")
-        return
+    translatedPaths.forEach { path ->
+        drawPath(
+            path = path.asComposePath(),
+            color = Color.Black,
+            style = Stroke(
+                width = vectorData.thickness,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
     }
-    val vectorData = images[Random.nextInt(images.size)]
-    drawVectorOnCanvas(vectorData)
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
@@ -55,7 +56,7 @@ fun PreviewRoot(
         viewModel.events.collect { event ->
             when (event) {
                 is UiEvent.NavigateToDraw -> {
-//                    navigator.navigate(DrawRootDestination())
+                    navigator.navigate(DrawRootDestination())
                 }
             }
         }

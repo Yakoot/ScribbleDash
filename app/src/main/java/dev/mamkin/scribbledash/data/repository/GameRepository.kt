@@ -3,13 +3,14 @@ package dev.mamkin.scribbledash.data.repository
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Environment
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.PathParser
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.File
 import java.io.IOException
+import android.graphics.Path as AndroidPath
 
 class GameRepository(private val applicationContext: Context) {
 
@@ -20,7 +21,7 @@ class GameRepository(private val applicationContext: Context) {
         var eventType = parser.eventType
         var viewportWidth = 0f
         var viewportHeight = 0f
-        val paths = mutableListOf<Path>()
+        val paths = mutableListOf<AndroidPath>()
         val pathParser = PathParser()
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -43,7 +44,7 @@ class GameRepository(private val applicationContext: Context) {
                                 "pathData"
                             )
                             if (pathData != null) {
-                                paths.add(pathParser.parsePathString(pathData).toPath())
+                                paths.add(pathParser.parsePathString(pathData).toPath().asAndroidPath())
                             }
                         }
                     }
@@ -68,7 +69,7 @@ class GameRepository(private val applicationContext: Context) {
             val outputFile = File(imagesDir, fileName)
 
             outputFile.outputStream().use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
             }
 
             outputFile.absolutePath

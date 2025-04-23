@@ -2,7 +2,7 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.BASE_USER_STROKE_WIDTH
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.USER_STROKE_WIDTH
 
 data class DrawState(
     val selectedColor: Color = Color.Black,
@@ -19,5 +19,5 @@ data class PathData(
     val id: String,
     val color: Color,
     val path: List<Offset>,
-    val thickness: Float = BASE_USER_STROKE_WIDTH
+    val thickness: Float = USER_STROKE_WIDTH
 )

@@ -1,7 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
 import dev.mamkin.scribbledash.R
-import kotlin.random.Random
 
 enum class PreviewImages(val resourceId: Int) {
     ALIEN(R.drawable.alien),
@@ -41,8 +40,9 @@ enum class PreviewImages(val resourceId: Int) {
 
     companion object {
         fun getRandomImage(): PreviewImages {
-            val values = PreviewImages.entries.toTypedArray()
-            return values[Random.nextInt(values.size)]
+//            val values = PreviewImages.entries.toTypedArray()
+//            return values[Random.nextInt(values.size)]
+            return CAT
         }
     }
 }

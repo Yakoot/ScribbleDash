@@ -3,7 +3,6 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Path
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import android.graphics.Path as AndroidPath
 
 class PreviewViewModel(
     private val gameViewModel: GameViewModel
@@ -57,7 +57,6 @@ class PreviewViewModel(
         for (sec in start downTo 0) {
             _state.update { it.copy(secondsLeft = sec) }
             if (sec == 0) {
-                gameViewModel.generateAndSaveExampleBitmap()
                 _events.send(UiEvent.NavigateToDraw)
                 return@launch
             }
@@ -79,6 +78,6 @@ sealed interface UiEvent {
 data class ImageData(
     val viewportWidth: Float,
     val viewportHeight: Float,
-    val paths: List<Path>,
-    val thickness: Float = 2f
+    val paths: List<AndroidPath>,
+    val thickness: Float = 10f
 )

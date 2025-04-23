@@ -1,36 +1,35 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.RectF
 import android.util.Log
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import dev.mamkin.scribbledash.data.repository.GameRepository
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.PathData
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawPath
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawVectorOnCanvas
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.createPaths
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawExampleVectorOnCanvasForDebug
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawUserVectorOnCanvasForDebug
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewImages
 import kotlin.random.Random
+import android.graphics.Path as AndroidPath
 
-// Base stroke width assumed for user drawings when calculating example thickness
-const val BASE_USER_STROKE_WIDTH = 1f
+const val USER_STROKE_WIDTH = 10f
+const val EXAMPLE_STROKE_WIDTH = 10f
 
-/**
- * ViewModel для управления игровым процессом, включая выбор случайного изображения
- */
 class GameViewModel(
     private val gameRepository: GameRepository
 ) : ViewModel() {
-    
+
     private var cachedImages: List<ImageData>? = null
     private var userDrawing: List<PathData>? = null
     private var canvasSize = Size.Zero
@@ -40,11 +39,11 @@ class GameViewModel(
     init {
         Log.d("ViewModelScope", "GameViewModel INIT, hashCode: ${this.hashCode()}")
     }
-    
+
     /**
      * Preloads images into the cache without updating the main state flow immediately.
      */
-    suspend fun preloadImagesToCache() {
+    fun preloadImagesToCache() {
         if (cachedImages != null) return // Already cached/preloaded
 
         Log.d("GameViewModel", "Preloading images into cache...")
@@ -52,7 +51,11 @@ class GameViewModel(
             try {
                 gameRepository.getImageData(entry.resourceId)
             } catch (e: Exception) {
-                Log.e("GameViewModel", "Failed to preload image data for resource ID: ${entry.resourceId}", e)
+                Log.e(
+                    "GameViewModel",
+                    "Failed to preload image data for resource ID: ${entry.resourceId}",
+                    e
+                )
                 null
             }
         }
@@ -62,19 +65,12 @@ class GameViewModel(
         cachedImages = images
         Log.d("GameViewModel", "Images preloaded into cache.")
     }
-    
-    /**
-     * Устанавливает уровень сложности
-     */
+
     fun setDifficultyLevel(level: DifficultyLevel) {
         Log.d("GameViewModel", "Difficulty level set to: $level")
         this.difficultyLevel = level
     }
-    
-    /**
-     * Загружает все изображения (если не кэшированы), выбирает случайное,
-     * сохраняет его в приватной переменной и возвращает.
-     */
+
     fun selectAndSetRandomImage(): ImageData {
         val images = cachedImages ?: loadImages() // Load images on demand if cache is empty
 
@@ -92,10 +88,6 @@ class GameViewModel(
         return randomImage // Return the selected image
     }
 
-    /**
-     * Генерирует образец изображения в Bitmap и сохраняет его,
-     * используя толщину линии, зависящую от уровня сложности.
-     */
     fun generateAndSaveExampleBitmap() {
         val originalImage = this.currentImage
         if (originalImage == null) {
@@ -116,23 +108,23 @@ class GameViewModel(
             DifficultyLevel.Master -> 4f
         }
 
-        val exampleStrokeWidth = BASE_USER_STROKE_WIDTH * thicknessMultiplier
-        Log.d("GameViewModel", "Generating example bitmap with stroke width: $exampleStrokeWidth (Multiplier: $thicknessMultiplier)")
+        val exampleStrokeWidth = USER_STROKE_WIDTH * thicknessMultiplier
+        Log.d(
+            "GameViewModel",
+            "Generating example bitmap with stroke width: $exampleStrokeWidth (Multiplier: $thicknessMultiplier)"
+        )
 
         // Create a copy of the ImageData with the modified thickness
         val imageWithModifiedThickness = originalImage.copy(thickness = exampleStrokeWidth)
 
         // Pass the modified image data to the drawing function
-        val bitmap = drawExampleToBitmap(imageWithModifiedThickness, canvasSize).asAndroidBitmap()
-        gameRepository.saveBitmapToFile(bitmap, "example_${System.currentTimeMillis()}.jpg")
-    }
-    
-    /**
-     * Получает множитель (для очков) для текущего уровня сложности
-     */
-    fun getDifficultyMultiplier(): Int {
-        val level = this.difficultyLevel ?: DifficultyLevel.Beginner
-        return level.multiplier
+        val exampleBitmap =
+            drawExampleToBitmap(imageWithModifiedThickness, canvasSize).asAndroidBitmap()
+//        gameRepository.saveBitmapToFile(bitmap, "example_${System.currentTimeMillis()}.png")
+        val userBitmap = drawToBitmap(userDrawing ?: emptyList(), canvasSize).asAndroidBitmap()
+//        gameRepository.saveBitmapToFile(userBitmap, "user_${System.currentTimeMillis()}.png")
+        val coverage = calculateCoverage(userBitmap, exampleBitmap)
+        Log.d("GameViewModel", "Coverage: $coverage")
     }
 
     /**
@@ -146,7 +138,11 @@ class GameViewModel(
             try {
                 gameRepository.getImageData(entry.resourceId)
             } catch (e: Exception) {
-                Log.e("GameViewModel", "Failed to load image data for resource ID: ${entry.resourceId}", e)
+                Log.e(
+                    "GameViewModel",
+                    "Failed to load image data for resource ID: ${entry.resourceId}",
+                    e
+                )
                 null
             }
         }
@@ -161,33 +157,28 @@ class GameViewModel(
 
     fun saveUserDrawing(data: List<PathData>) {
         userDrawing = data
+        generateAndSaveExampleBitmap()
     }
 
-    fun setCanvasSize (size: Size) {
+    fun setCanvasSize(size: Size) {
         this.canvasSize = size
     }
 }
 
-fun drawToBitmap(paths: List<PathData>, size: Size): ImageBitmap {
+fun drawToBitmap(pathData: List<PathData>, size: Size): ImageBitmap {
     val drawScope = CanvasDrawScope()
     val bitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
     val canvas = Canvas(bitmap)
+    val paths = pathData.createPaths()
 
     drawScope.draw(
-        density = Density(1f),
+        density = Density(2f),
         layoutDirection = LayoutDirection.Ltr,
         canvas = canvas,
         size = size,
     ) {
         // Draw whatever you want here; for instance, a white background and a red line.
-        drawRect(color = Color.White, topLeft = Offset.Zero, size = size)
-        paths.fastForEach { pathData ->
-            drawPath(
-                path = pathData.path,
-                color = pathData.color,
-                thickness = 140f
-            )
-        }
+        drawUserVectorOnCanvasForDebug(paths)
     }
     return bitmap
 }
@@ -198,14 +189,83 @@ fun drawExampleToBitmap(image: ImageData, size: Size): ImageBitmap {
     val canvas = Canvas(bitmap)
 
     drawScope.draw(
-        density = Density(1f),
+        density = Density(2f),
         layoutDirection = LayoutDirection.Ltr,
         canvas = canvas,
         size = size,
     ) {
         // Draw whatever you want here; for instance, a white background and a red line.
-        drawRect(color = Color.White, topLeft = Offset.Zero, size = size)
-        drawVectorOnCanvas(image)
+        drawExampleVectorOnCanvasForDebug(image)
     }
     return bitmap
-} 
+}
+
+fun calculateTotalBounds(paths: List<AndroidPath>): RectF {
+    // If there are no paths, return an “empty” RectF
+    if (paths.isEmpty()) return RectF()
+
+    // temp will hold each individual path’s bounds
+    val tempBounds = RectF()
+    // totalBounds will accumulate the union
+    val totalBounds = RectF().also { first ->
+        // initialize with the bounds of the first path
+        paths[0].computeBounds(tempBounds, true)
+        first.set(tempBounds)
+    }
+
+    // union in all the rest
+    for (i in 1 until paths.size) {
+        paths[i].computeBounds(tempBounds, true)
+        totalBounds.union(tempBounds)
+    }
+
+    return totalBounds
+}
+
+fun calculateCoverage(
+    userBmp: Bitmap,
+    exampleBmp: Bitmap
+): Float {
+    // 1) size check
+    require(
+        userBmp.width == exampleBmp.width &&
+                userBmp.height == exampleBmp.height
+    ) {
+        "Bitmaps must be the same dimensions"
+    }
+
+    val width = userBmp.width
+    val height = userBmp.height
+    val totalPixels = width * height
+
+    // 2) bulk-read all pixels
+    val userPixels = IntArray(totalPixels)
+    val examplePixels = IntArray(totalPixels)
+    userBmp.getPixels(userPixels, 0, width, 0, 0, width, height)
+    exampleBmp.getPixels(examplePixels, 0, width, 0, 0, width, height)
+
+    // 3) compare
+    var visibleUserPixels = 0
+    var matchedUserPixels = 0
+
+    for (i in 0 until totalPixels) {
+        val userAlpha = Color.alpha(userPixels[i])
+        val exampleAlpha = Color.alpha(examplePixels[i])
+
+        // skip if both are transparent
+        if (userAlpha == 0 && exampleAlpha == 0) continue
+
+        // count every non-transparent user pixel
+        if (userAlpha != 0) {
+            visibleUserPixels++
+            if (exampleAlpha != 0) {
+                matchedUserPixels++
+            }
+        }
+    }
+
+    // 4) avoid divide-by-zero
+    if (visibleUserPixels == 0) return 0f
+
+    return matchedUserPixels.toFloat() / visibleUserPixels.toFloat()
+}
