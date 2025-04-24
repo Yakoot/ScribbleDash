@@ -4,11 +4,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
 class DrawViewModel(
@@ -16,6 +19,9 @@ class DrawViewModel(
 ) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
+
+    private val _events = Channel<UiEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     private val _state = MutableStateFlow(DrawState())
     val state = _state
@@ -75,6 +81,9 @@ class DrawViewModel(
     private fun onDoneClick() {
         val paths = _state.value.paths
         gameViewModel.saveUserDrawing(paths)
+        viewModelScope.launch {
+            _events.send(UiEvent.NavigateToResults)
+        }
     }
 
     private fun onUndo() {
@@ -110,4 +119,8 @@ class DrawViewModel(
             )
         }
     }
+}
+
+sealed interface UiEvent {
+    data object NavigateToResults : UiEvent
 }

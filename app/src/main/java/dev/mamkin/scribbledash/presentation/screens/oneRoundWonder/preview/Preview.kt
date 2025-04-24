@@ -127,8 +127,9 @@ fun PreviewScreen(
                             .fillMaxSize()
                             .padding(12.dp)
                             .clip(RoundedCornerShape(24.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                        image = state.image,
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                        ,
+                        paths = state.image,
                         onSizeChanged = onSizeChanged
                     )
                 }

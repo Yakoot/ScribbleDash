@@ -34,8 +34,6 @@ class PreviewViewModel(
         .onStart {
             if (!hasLoadedInitialData) {
                 // Load initial image when the flow starts and hasn't loaded yet
-                val image = gameViewModel.selectAndSetRandomImage()
-                _state.update { it.copy(image = image) }
                 hasLoadedInitialData = true
             }
         }
@@ -66,6 +64,8 @@ class PreviewViewModel(
 
     fun onSizeChanged(size: Size) {
         gameViewModel.setCanvasSize(size)
+        val image = gameViewModel.selectAndSetRandomImage()
+        _state.update { it.copy(image = image) }
         startCountdown()
     }
 }

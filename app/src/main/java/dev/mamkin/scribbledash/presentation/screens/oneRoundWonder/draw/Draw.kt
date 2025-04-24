@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.ResultsRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
@@ -51,6 +53,15 @@ fun DrawRoot(
         )
     }
 ) {
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect { event ->
+            when (event) {
+                UiEvent.NavigateToResults -> {
+                    navigator.navigate(ResultsRootDestination)
+                }
+            }
+        }
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     DrawScreen(

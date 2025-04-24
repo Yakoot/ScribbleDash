@@ -2,7 +2,6 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.results
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,30 +25,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewCanvas
 import dev.mamkin.scribbledash.ui.components.AppButton
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.OnSurface
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
+@Destination<OneRoundWonderGraph>
 @Composable
 fun ResultsRoot(
-    viewModel: ResultsViewModel = viewModel()
+    navigator: DestinationsNavigator,
+    gameViewModel: GameViewModel,
+    viewModel: ResultsViewModel = koinViewModel { parametersOf(gameViewModel) }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ResultsScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = {
+            when(it) {
+                is ResultsAction.Close -> {
+                    navigator.popBackStack(
+                        route = HomeRootDestination,
+                        inclusive = false
+                    )
+                }
+                is ResultsAction.TryAgain -> {
+                    navigator.navigate(OneRoundWonderNavGraph)
+                }
+
+                else -> {
+                    viewModel.onAction(action = it)
+                }
+            }
+        }
     )
 }
 
@@ -57,6 +84,15 @@ fun ResultsScreen(
     state: ResultsState,
     onAction: (ResultsAction) -> Unit,
 ) {
+    val oopsArray: Array<String> = stringArrayResource(R.array.oops_array)
+    val goodArray: Array<String> = stringArrayResource(R.array.good_array)
+    val woohooArray: Array<String> = stringArrayResource(R.array.woohoo_array)
+    val title = state.rating.getTitle()
+    val subtitle = when(state.rating) {
+        Rating.OOPS, Rating.MEH -> oopsArray.random()
+        Rating.GREAT, Rating.GOOD -> goodArray.random()
+        Rating.WOOHOO -> woohooArray.random()
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +103,7 @@ fun ResultsScreen(
             AppTopBar(
                 actions = {
                     IconButton(
-                        onClick = {}
+                        onClick = { onAction(ResultsAction.Close) }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_close),
@@ -107,15 +143,24 @@ fun ResultsScreen(
                             color = OnSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Box(
+                        Surface(
                             modifier = Modifier
-                                .size(160.dp)
-                                .background(Color.Transparent)
-                                .shadow(8.dp, RoundedCornerShape(16.dp), clip = false)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .size(160.dp),
+                            shadowElevation = 8.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh
                         ) {
-
+                            PreviewCanvas(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(6.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                ,
+                                gridRadius = 12.dp,
+                                paths = state.exampleImageData,
+                                onSizeChanged = { onAction(ResultsAction.ImageSizeChanged(it)) }
+                            )
                         }
                     }
 
@@ -132,28 +177,37 @@ fun ResultsScreen(
                             color = OnSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Box(
+                        Surface(
                             modifier = Modifier
-                                .size(160.dp)
-                                .background(Color.Transparent)
-                                .shadow(8.dp, RoundedCornerShape(16.dp), clip = false)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .size(160.dp),
+                            shadowElevation = 8.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh
                         ) {
-
+                            PreviewCanvas(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(6.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                ,
+                                gridRadius = 12.dp,
+                                paths = state.userImageData,
+                            )
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))
                 Text(
-                    text = state.title,
+                    text = title,
                     style = MaterialTheme.typography.headlineLarge,
                     color = OnBackground
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = state.subtitle,
+                    textAlign = TextAlign.Center,
+                    text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = OnBackgroundVariant
                 )
@@ -161,11 +215,10 @@ fun ResultsScreen(
                 AppButton(
                     text = "TRY AGAIN",
                     containerColor = MaterialTheme.colorScheme.primary,
-                    onClick = {},
+                    onClick = { onAction(ResultsAction.TryAgain) },
                     enabled = true
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-
             }
         }
     }

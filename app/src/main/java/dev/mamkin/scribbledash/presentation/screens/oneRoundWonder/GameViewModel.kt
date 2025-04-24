@@ -2,6 +2,7 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Path
 import android.graphics.RectF
 import android.util.Log
 import androidx.compose.ui.geometry.Size
@@ -16,10 +17,14 @@ import dev.mamkin.scribbledash.data.repository.GameRepository
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.PathData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.createPaths
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawExampleVectorOnCanvasForDebug
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawUserVectorOnCanvasForDebug
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawPathsWithThickness
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.moveToTopLeftCorner
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.totalLength
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewImages
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.results.Rating
+import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 import android.graphics.Path as AndroidPath
 
@@ -34,7 +39,11 @@ class GameViewModel(
     private var userDrawing: List<PathData>? = null
     private var canvasSize = Size.Zero
     private var difficultyLevel: DifficultyLevel? = null
-    private var currentImage: ImageData? = null
+    private var finalScore: Int = 0
+    private var rating: Rating = Rating.OOPS
+
+    private var exampleImagePaths: List<Path> = emptyList()
+    private var userImagePaths: List<Path> = emptyList()
 
     init {
         Log.d("ViewModelScope", "GameViewModel INIT, hashCode: ${this.hashCode()}")
@@ -71,29 +80,22 @@ class GameViewModel(
         this.difficultyLevel = level
     }
 
-    fun selectAndSetRandomImage(): ImageData {
+    fun selectAndSetRandomImage(): List<Path> {
         val images = cachedImages ?: loadImages() // Load images on demand if cache is empty
 
         if (images.isEmpty()) {
             Log.e("GameViewModel", "No images loaded or available to select from.")
             // Return a default placeholder or handle error appropriately
-            val placeholder = ImageData(0f, 0f, emptyList())
-            this.currentImage = placeholder // Set the placeholder internally as well
-            return placeholder
+            return emptyList()
         }
 
         val randomImage = images[Random.nextInt(images.size)]
-        this.currentImage = randomImage // Store the selected image
-        Log.d("GameViewModel", "Random image selected and stored.")
-        return randomImage // Return the selected image
+        val scaledImagePaths: List<Path> = randomImage.paths.scaleToNewSize(Size(randomImage.viewportWidth, randomImage.viewportHeight), canvasSize)
+        this.exampleImagePaths = scaledImagePaths // Store the selected image
+        return scaledImagePaths // Return the selected image
     }
 
     fun generateAndSaveExampleBitmap() {
-        val originalImage = this.currentImage
-        if (originalImage == null) {
-            Log.w("GameViewModel", "Cannot generate example bitmap: currentImage is null.")
-            return
-        }
         if (canvasSize == Size.Zero) {
             Log.w("GameViewModel", "Cannot generate example bitmap: canvasSize is Zero.")
             return
@@ -114,17 +116,33 @@ class GameViewModel(
             "Generating example bitmap with stroke width: $exampleStrokeWidth (Multiplier: $thicknessMultiplier)"
         )
 
-        // Create a copy of the ImageData with the modified thickness
-        val imageWithModifiedThickness = originalImage.copy(thickness = exampleStrokeWidth)
-
         // Pass the modified image data to the drawing function
+        val exampleInset = -exampleStrokeWidth / 2f
+        val userInset = -USER_STROKE_WIDTH / 2f - (EXAMPLE_STROKE_WIDTH - USER_STROKE_WIDTH) / 2
+
         val exampleBitmap =
-            drawExampleToBitmap(imageWithModifiedThickness, canvasSize).asAndroidBitmap()
-//        gameRepository.saveBitmapToFile(bitmap, "example_${System.currentTimeMillis()}.png")
-        val userBitmap = drawToBitmap(userDrawing ?: emptyList(), canvasSize).asAndroidBitmap()
-//        gameRepository.saveBitmapToFile(userBitmap, "user_${System.currentTimeMillis()}.png")
+            drawPathsToBitmap(exampleImagePaths, canvasSize, exampleStrokeWidth, exampleInset)
+                .asAndroidBitmap()
+        gameRepository.saveBitmapToFile(exampleBitmap, "example_${System.currentTimeMillis()}.png")
+
+        val userBitmap = drawPathsToBitmap(userImagePaths, canvasSize, USER_STROKE_WIDTH, userInset)
+            .asAndroidBitmap()
+        gameRepository.saveBitmapToFile(userBitmap, "user_${System.currentTimeMillis()}.png")
+
         val coverage = calculateCoverage(userBitmap, exampleBitmap)
-        Log.d("GameViewModel", "Coverage: $coverage")
+        val exampleLength = exampleImagePaths.totalLength()
+        val userLength = userImagePaths.totalLength()
+        val userLengthPercent = userLength / exampleLength * 100
+        val missingLengthPenalty = if (userLengthPercent < 70) {
+            (100 - userLengthPercent) * 1f
+        } else {
+            0f
+        }
+        val coveragePercent = coverage * 100f
+        finalScore = (coveragePercent - missingLengthPenalty).roundToInt()
+        if (finalScore < 0) finalScore = 0
+        rating = Rating.fromScore(finalScore)
+        Log.d("GameViewModel", "coveragePercent = $coveragePercent, finalScore = $finalScore")
     }
 
     /**
@@ -157,36 +175,47 @@ class GameViewModel(
 
     fun saveUserDrawing(data: List<PathData>) {
         userDrawing = data
+        this.userImagePaths = data.createPaths()
         generateAndSaveExampleBitmap()
     }
 
     fun setCanvasSize(size: Size) {
         this.canvasSize = size
     }
-}
 
-fun drawToBitmap(pathData: List<PathData>, size: Size): ImageBitmap {
-    val drawScope = CanvasDrawScope()
-    val bitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
-    val canvas = Canvas(bitmap)
-    val paths = pathData.createPaths()
-
-    drawScope.draw(
-        density = Density(2f),
-        layoutDirection = LayoutDirection.Ltr,
-        canvas = canvas,
-        size = size,
-    ) {
-        // Draw whatever you want here; for instance, a white background and a red line.
-        drawUserVectorOnCanvasForDebug(paths)
+    fun getSize(): Size {
+        return canvasSize
     }
-    return bitmap
+
+    fun getExampleImageForResults(): List<Path> {
+        return exampleImagePaths
+    }
+
+    fun getUserImageForResults(): List<Path> {
+        return userImagePaths
+    }
+
+    fun getRating(): Rating {
+        return rating
+    }
+
+    fun getPercent(): Int {
+        return finalScore
+    }
 }
 
-fun drawExampleToBitmap(image: ImageData, size: Size): ImageBitmap {
+
+fun drawPathsToBitmap(
+    paths: List<Path>,
+    size: Size,
+    thickness: Float = EXAMPLE_STROKE_WIDTH,
+    inset: Float = 0f
+): ImageBitmap {
     val drawScope = CanvasDrawScope()
     val bitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
     val canvas = Canvas(bitmap)
+
+    val movedPaths = paths.moveToTopLeftCorner(inset, size.width, size.height)
 
     drawScope.draw(
         density = Density(2f),
@@ -195,7 +224,7 @@ fun drawExampleToBitmap(image: ImageData, size: Size): ImageBitmap {
         size = size,
     ) {
         // Draw whatever you want here; for instance, a white background and a red line.
-        drawExampleVectorOnCanvasForDebug(image)
+        drawPathsWithThickness(movedPaths, thickness)
     }
     return bitmap
 }
@@ -268,4 +297,27 @@ fun calculateCoverage(
     if (visibleUserPixels == 0) return 0f
 
     return matchedUserPixels.toFloat() / visibleUserPixels.toFloat()
+}
+
+fun List<Path>.scaleToNewSize(
+    fromSize: Size,
+    toSize: Size
+): List<Path> {
+    if (fromSize.width <= 0f || fromSize.height <= 0f) {
+        println("Warning: Invalid initial size")
+        return emptyList()
+    }
+
+    val scaleX = toSize.width / fromSize.width
+    val scaleY = toSize.height / fromSize.height
+    val scale = min(scaleX, scaleY)
+    val matrix = android.graphics.Matrix().apply {
+        setScale(scale, scale)
+    }
+
+    return this.map { original ->
+        AndroidPath(original).apply {
+            transform(matrix)
+        }
+    }
 }
