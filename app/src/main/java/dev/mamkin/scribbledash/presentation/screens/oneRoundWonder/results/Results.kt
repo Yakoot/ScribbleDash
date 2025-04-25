@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.results
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewCanvas
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.components.PreviewCanvas
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.AppButton
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
@@ -56,6 +58,7 @@ fun ResultsRoot(
     viewModel: ResultsViewModel = koinViewModel { parametersOf(gameViewModel) }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    BackHandler {  }
 
     ResultsScreen(
         state = state,
@@ -156,8 +159,8 @@ fun ResultsScreen(
                                     .padding(6.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                    .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp)
                                 ,
-                                gridRadius = 12.dp,
                                 paths = state.exampleImageData,
                                 onSizeChanged = { onAction(ResultsAction.ImageSizeChanged(it)) }
                             )
@@ -190,8 +193,8 @@ fun ResultsScreen(
                                     .padding(6.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                    .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp)
                                 ,
-                                gridRadius = 12.dp,
                                 paths = state.userImageData,
                             )
                         }

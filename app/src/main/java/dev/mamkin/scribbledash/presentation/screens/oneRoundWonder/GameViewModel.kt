@@ -16,13 +16,13 @@ import androidx.lifecycle.ViewModel
 import dev.mamkin.scribbledash.data.repository.GameRepository
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.PathData
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.createPaths
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawPathsWithThickness
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.moveToTopLeftCorner
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.totalLength
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewImages
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.results.Rating
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.createPaths
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawPathsWithThickness
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.moveToTopLeftCorner
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.totalLength
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -36,7 +36,6 @@ class GameViewModel(
 ) : ViewModel() {
 
     private var cachedImages: List<ImageData>? = null
-    private var userDrawing: List<PathData>? = null
     private var canvasSize = Size.Zero
     private var difficultyLevel: DifficultyLevel? = null
     private var finalScore: Int = 0
@@ -45,17 +44,12 @@ class GameViewModel(
     private var exampleImagePaths: List<Path> = emptyList()
     private var userImagePaths: List<Path> = emptyList()
 
-    init {
-        Log.d("ViewModelScope", "GameViewModel INIT, hashCode: ${this.hashCode()}")
-    }
-
     /**
      * Preloads images into the cache without updating the main state flow immediately.
      */
     fun preloadImagesToCache() {
         if (cachedImages != null) return // Already cached/preloaded
 
-        Log.d("GameViewModel", "Preloading images into cache...")
         val images = PreviewImages.entries.mapNotNull { entry ->
             try {
                 gameRepository.getImageData(entry.resourceId)
@@ -72,11 +66,9 @@ class GameViewModel(
             Log.w("GameViewModel", "Warning: No images were preloaded successfully.")
         }
         cachedImages = images
-        Log.d("GameViewModel", "Images preloaded into cache.")
     }
 
     fun setDifficultyLevel(level: DifficultyLevel) {
-        Log.d("GameViewModel", "Difficulty level set to: $level")
         this.difficultyLevel = level
     }
 
@@ -95,15 +87,13 @@ class GameViewModel(
         return scaledImagePaths // Return the selected image
     }
 
-    fun generateAndSaveExampleBitmap() {
+    fun calculateFinalScore() {
         if (canvasSize == Size.Zero) {
             Log.w("GameViewModel", "Cannot generate example bitmap: canvasSize is Zero.")
             return
         }
 
-        Log.d("GameViewModel", "Generating example bitmap... difficultyLevel = $difficultyLevel")
 
-        // Determine thickness multiplier based on difficulty
         val thicknessMultiplier = when (difficultyLevel ?: DifficultyLevel.Beginner) {
             DifficultyLevel.Beginner -> 15f
             DifficultyLevel.Challenging -> 7f
@@ -111,12 +101,7 @@ class GameViewModel(
         }
 
         val exampleStrokeWidth = USER_STROKE_WIDTH * thicknessMultiplier
-        Log.d(
-            "GameViewModel",
-            "Generating example bitmap with stroke width: $exampleStrokeWidth (Multiplier: $thicknessMultiplier)"
-        )
 
-        // Pass the modified image data to the drawing function
         val exampleInset = -exampleStrokeWidth / 2f
         val userInset = -USER_STROKE_WIDTH / 2f - (EXAMPLE_STROKE_WIDTH - USER_STROKE_WIDTH) / 2
 
@@ -142,7 +127,6 @@ class GameViewModel(
         finalScore = (coveragePercent - missingLengthPenalty).roundToInt()
         if (finalScore < 0) finalScore = 0
         rating = Rating.fromScore(finalScore)
-        Log.d("GameViewModel", "coveragePercent = $coveragePercent, finalScore = $finalScore")
     }
 
     /**
@@ -151,7 +135,6 @@ class GameViewModel(
     private fun loadImages(): List<ImageData> {
         cachedImages?.let { return it }
 
-        Log.d("GameViewModel", "Loading images on demand (cache was empty).")
         val images = PreviewImages.entries.mapNotNull { entry ->
             try {
                 gameRepository.getImageData(entry.resourceId)
@@ -174,9 +157,8 @@ class GameViewModel(
     }
 
     fun saveUserDrawing(data: List<PathData>) {
-        userDrawing = data
         this.userImagePaths = data.createPaths()
-        generateAndSaveExampleBitmap()
+        calculateFinalScore()
     }
 
     fun setCanvasSize(size: Size) {
@@ -223,26 +205,20 @@ fun drawPathsToBitmap(
         canvas = canvas,
         size = size,
     ) {
-        // Draw whatever you want here; for instance, a white background and a red line.
         drawPathsWithThickness(movedPaths, thickness)
     }
     return bitmap
 }
 
 fun calculateTotalBounds(paths: List<AndroidPath>): RectF {
-    // If there are no paths, return an “empty” RectF
     if (paths.isEmpty()) return RectF()
 
-    // temp will hold each individual path’s bounds
     val tempBounds = RectF()
-    // totalBounds will accumulate the union
     val totalBounds = RectF().also { first ->
-        // initialize with the bounds of the first path
         paths[0].computeBounds(tempBounds, true)
         first.set(tempBounds)
     }
 
-    // union in all the rest
     for (i in 1 until paths.size) {
         paths[i].computeBounds(tempBounds, true)
         totalBounds.union(tempBounds)

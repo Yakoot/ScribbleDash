@@ -1,9 +1,7 @@
-package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.components
 
 import android.graphics.Path
-import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,25 +10,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.EXAMPLE_STROKE_WIDTH
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawGrid
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.drawPathsWithThickness
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawPathsWithThickness
 
 @Composable
 fun PreviewCanvas(
     paths: List<Path>,
-    gridRadius: Dp = 24.dp,
     modifier: Modifier = Modifier,
     onSizeChanged: (Size) -> Unit = {},
 ) {
-    val lineColor = MaterialTheme.colorScheme.onSurfaceVariant
     var savedSize by remember { mutableStateOf(Size.Zero) }
     var hasSizeBeenReported by remember { mutableStateOf(false) }
     
     LaunchedEffect(savedSize) {
-        Log.d("PreviewCanvas", "onSizeChanged: $savedSize")
         if (savedSize != Size.Zero && !hasSizeBeenReported) {
             onSizeChanged(savedSize)
             hasSizeBeenReported = true
@@ -39,7 +31,6 @@ fun PreviewCanvas(
 
     Canvas(
         modifier = modifier
-            .drawGrid(lineColor, gridRadius)
     ) {
         savedSize = size
         drawPathsWithThickness(paths, EXAMPLE_STROKE_WIDTH)

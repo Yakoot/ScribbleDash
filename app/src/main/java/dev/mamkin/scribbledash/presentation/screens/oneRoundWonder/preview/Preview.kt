@@ -1,7 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,9 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +35,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.components.PreviewCanvas
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
@@ -113,13 +113,12 @@ fun PreviewScreen(
                     color = OnBackground
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                Box(
+                Surface(
+                    shadowElevation = 8.dp,
+                    shape = RoundedCornerShape(36.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .background(Color.Transparent)
-                        .shadow(16.dp, RoundedCornerShape(36.dp), clip = false)
-                        .clip(RoundedCornerShape(36.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 ) {
                     PreviewCanvas(
@@ -128,6 +127,7 @@ fun PreviewScreen(
                             .padding(12.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp)
                         ,
                         paths = state.image,
                         onSizeChanged = onSizeChanged

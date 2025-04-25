@@ -58,6 +58,5 @@ class ResultsViewModel(
             rating = rating,
             percent = percent.toString()
         ) }
-
     }
 }
