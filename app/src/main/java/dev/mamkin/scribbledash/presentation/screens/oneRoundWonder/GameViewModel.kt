@@ -123,11 +123,11 @@ class GameViewModel(
         val exampleBitmap =
             drawPathsToBitmap(exampleImagePaths, canvasSize, exampleStrokeWidth, exampleInset)
                 .asAndroidBitmap()
-        gameRepository.saveBitmapToFile(exampleBitmap, "example_${System.currentTimeMillis()}.png")
+//        gameRepository.saveBitmapToFile(exampleBitmap, "example_${System.currentTimeMillis()}.png")
 
         val userBitmap = drawPathsToBitmap(userImagePaths, canvasSize, USER_STROKE_WIDTH, userInset)
             .asAndroidBitmap()
-        gameRepository.saveBitmapToFile(userBitmap, "user_${System.currentTimeMillis()}.png")
+//        gameRepository.saveBitmapToFile(userBitmap, "user_${System.currentTimeMillis()}.png")
 
         val coverage = calculateCoverage(userBitmap, exampleBitmap)
         val exampleLength = exampleImagePaths.totalLength()
