@@ -127,8 +127,7 @@ fun PreviewScreen(
                             .padding(12.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp)
-                        ,
+                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp),
                         paths = state.image,
                         onSizeChanged = onSizeChanged
                     )
@@ -141,7 +140,7 @@ fun PreviewScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 val text = pluralStringResource(
-                    id    = R.plurals.seconds_left,
+                    id = R.plurals.seconds_left,
                     count = state.secondsLeft,
                     state.secondsLeft
                 )

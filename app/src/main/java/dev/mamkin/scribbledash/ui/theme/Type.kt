@@ -34,7 +34,7 @@ val Typography = Typography(
         fontSize = 40.sp,
         lineHeight = 44.sp
     ),
-    
+
     // Headline styles (Bagel Fat One)
     headlineLarge = TextStyle(
         fontFamily = BagelFatOneFamily,
@@ -54,7 +54,7 @@ val Typography = Typography(
         fontSize = 18.sp,
         lineHeight = 26.sp
     ),
-    
+
     // Title styles (using Bagel Fat One small)
     titleLarge = TextStyle(
         fontFamily = BagelFatOneFamily,
@@ -62,7 +62,7 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 18.sp
     ),
-    
+
     // Body styles (Outfit)
     bodyLarge = TextStyle(
         fontFamily = OutfitFamily,
@@ -82,7 +82,7 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 18.sp
     ),
-    
+
     // Label styles (Outfit with SemiBold weight)
     labelLarge = TextStyle(
         fontFamily = OutfitFamily,

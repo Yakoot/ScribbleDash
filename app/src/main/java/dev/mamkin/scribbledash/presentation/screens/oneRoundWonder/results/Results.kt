@@ -58,18 +58,19 @@ fun ResultsRoot(
     viewModel: ResultsViewModel = koinViewModel { parametersOf(gameViewModel) }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    BackHandler {  }
+    BackHandler { }
 
     ResultsScreen(
         state = state,
         onAction = {
-            when(it) {
+            when (it) {
                 is ResultsAction.Close -> {
                     navigator.popBackStack(
                         route = HomeRootDestination,
                         inclusive = false
                     )
                 }
+
                 is ResultsAction.TryAgain -> {
                     navigator.navigate(OneRoundWonderNavGraph)
                 }
@@ -91,7 +92,7 @@ fun ResultsScreen(
     val goodArray: Array<String> = stringArrayResource(R.array.good_array)
     val woohooArray: Array<String> = stringArrayResource(R.array.woohoo_array)
     val title = state.rating.getTitle()
-    val subtitle = when(state.rating) {
+    val subtitle = when (state.rating) {
         Rating.OOPS, Rating.MEH -> oopsArray.random()
         Rating.GREAT, Rating.GOOD -> goodArray.random()
         Rating.WOOHOO -> woohooArray.random()
@@ -159,8 +160,7 @@ fun ResultsScreen(
                                     .padding(6.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                    .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp)
-                                ,
+                                    .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp),
                                 paths = state.exampleImageData,
                                 onSizeChanged = { onAction(ResultsAction.ImageSizeChanged(it)) }
                             )
@@ -193,8 +193,7 @@ fun ResultsScreen(
                                     .padding(6.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                    .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp)
-                                ,
+                                    .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp),
                                 paths = state.userImageData,
                             )
                         }

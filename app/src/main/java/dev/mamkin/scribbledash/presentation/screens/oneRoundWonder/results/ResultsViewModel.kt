@@ -45,18 +45,22 @@ class ResultsViewModel(
         val oldCanvasSize = gameViewModel.getSize()
         val exampleImageScaled = exampleImage.scaleToNewSize(oldCanvasSize, newSize)
         val userImageScaled = userImage.scaleToNewSize(oldCanvasSize, newSize)
-        _state.update { it.copy(
-            exampleImageData = exampleImageScaled,
-            userImageData = userImageScaled
-        ) }
+        _state.update {
+            it.copy(
+                exampleImageData = exampleImageScaled,
+                userImageData = userImageScaled
+            )
+        }
     }
 
     private fun prepareResults() {
         val rating = gameViewModel.getRating()
         val percent = gameViewModel.getPercent()
-        _state.update { it.copy(
-            rating = rating,
-            percent = percent.toString()
-        ) }
+        _state.update {
+            it.copy(
+                rating = rating,
+                percent = percent.toString()
+            )
+        }
     }
 }

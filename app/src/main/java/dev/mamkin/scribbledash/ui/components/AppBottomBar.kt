@@ -65,7 +65,8 @@ enum class BottomBarDestination(
     val selectedIconColor: Color,
     val enabled: Boolean = true,
 ) {
-    ComingSoon(StatisticsRootDestination, R.drawable.ic_statistics,
+    ComingSoon(
+        StatisticsRootDestination, R.drawable.ic_statistics,
         TertiaryContainer
     ),
     Home(HomeRootDestination, R.drawable.ic_home, Primary),

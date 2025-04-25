@@ -61,7 +61,7 @@ fun StatisticsRootScreen() {
     ) { innerPadding ->
         Column(
             modifier = Modifier.consumeWindowInsets(innerPadding)
-        ){
+        ) {
             AppTopBar(
                 title = {
                     Text(
@@ -141,7 +141,6 @@ fun StatisticsCard(
         }
     }
 }
-
 
 
 @Preview

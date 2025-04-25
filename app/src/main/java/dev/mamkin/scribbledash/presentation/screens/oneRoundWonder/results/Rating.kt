@@ -13,7 +13,7 @@ enum class Rating(val minScore: Int, val maxScore: Int) {
         }
     }
 
-    fun getTitle(): String = when(this) {
+    fun getTitle(): String = when (this) {
         OOPS -> "Oops"
         MEH -> "Meh"
         GOOD -> "Good"

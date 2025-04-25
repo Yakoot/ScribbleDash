@@ -128,8 +128,7 @@ fun DrawScreen(
                             .padding(12.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp)
-                        ,
+                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp),
                         paths = state.paths,
                         currentPath = state.currentPath,
                         onAction = onAction
@@ -149,7 +148,6 @@ fun DrawScreen(
         }
     }
 }
-
 
 
 @Preview

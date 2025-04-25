@@ -38,13 +38,16 @@ class GameRepository(private val applicationContext: Context) {
                                 "viewportHeight"
                             )?.toFloatOrNull() ?: 0f
                         }
+
                         "path" -> {
                             val pathData = parser.getAttributeValue(
                                 "http://schemas.android.com/apk/res/android",
                                 "pathData"
                             )
                             if (pathData != null) {
-                                paths.add(pathParser.parsePathString(pathData).toPath().asAndroidPath())
+                                paths.add(
+                                    pathParser.parsePathString(pathData).toPath().asAndroidPath()
+                                )
                             }
                         }
                     }

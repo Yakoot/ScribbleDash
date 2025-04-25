@@ -16,6 +16,7 @@ val Success = Color(0xFF0DD280)
 
 // Background colors
 val Background = Color(0xFFFEFAF6)
+
 // Background gradient from FEFAF6 to FFF1E2 (to be used with Brush)
 val BackgroundGradientStart = Color(0xFFFEFAF6)
 val BackgroundGradientEnd = Color(0xFFFFF1E2)

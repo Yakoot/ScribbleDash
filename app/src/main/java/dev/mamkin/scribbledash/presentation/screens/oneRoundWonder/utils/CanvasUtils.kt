@@ -22,17 +22,17 @@ import android.graphics.Path as AndroidPath
 internal fun List<PathData>.createPaths(): List<AndroidPath> = map {
     val path = it.path
     Path().apply {
-        if(path.isNotEmpty()) {
+        if (path.isNotEmpty()) {
             moveTo(path.first().x, path.first().y)
 
             val smoothness = 5
-            for(i in 1..path.lastIndex) {
+            for (i in 1..path.lastIndex) {
                 val from = path[i - 1]
                 val to = path[i]
                 val dx = abs(from.x - to.x)
                 val dy = abs(from.y - to.y)
 
-                if(dx >= smoothness || dy >= smoothness) {
+                if (dx >= smoothness || dy >= smoothness) {
                     quadraticTo(
                         x1 = (from.x + to.x) / 2f,
                         y1 = (from.y + to.y) / 2f,
@@ -89,12 +89,16 @@ fun Modifier.drawGrid(
     }
 }
 
-fun List<AndroidPath>.moveToTopLeftCorner(inset: Float, canvasWidth: Float, canvasHeight: Float): List<AndroidPath> {
+fun List<AndroidPath>.moveToTopLeftCorner(
+    inset: Float,
+    canvasWidth: Float,
+    canvasHeight: Float
+): List<AndroidPath> {
     val bounds = calculateTotalBounds(this)
     bounds.inset(inset, inset)
 
-    val newScaleX = canvasWidth  / bounds.width()
-    val newScaleY = canvasHeight  / bounds.height()
+    val newScaleX = canvasWidth / bounds.width()
+    val newScaleY = canvasHeight / bounds.height()
     val newScale = min(newScaleX, newScaleY)
 
     val newMatrix = Matrix().apply {
@@ -108,7 +112,6 @@ fun List<AndroidPath>.moveToTopLeftCorner(inset: Float, canvasWidth: Float, canv
         }
     }
 }
-
 
 
 fun AndroidPath.length(): Float {

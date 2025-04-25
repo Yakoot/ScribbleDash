@@ -21,7 +21,7 @@ fun PreviewCanvas(
 ) {
     var savedSize by remember { mutableStateOf(Size.Zero) }
     var hasSizeBeenReported by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(savedSize) {
         if (savedSize != Size.Zero && !hasSizeBeenReported) {
             onSizeChanged(savedSize)

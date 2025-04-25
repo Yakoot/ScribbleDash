@@ -1,6 +1,5 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,8 +46,6 @@ fun DifficultyLevelRoot(
     gameViewModel: GameViewModel,
     navigator: DestinationsNavigator,
 ) {
-    Log.d("GameViewModel", "gameViewModel instance = $gameViewModel")
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         gameViewModel.preloadImagesToCache()
     }

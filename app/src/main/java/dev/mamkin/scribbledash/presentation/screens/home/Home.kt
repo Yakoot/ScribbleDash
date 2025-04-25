@@ -63,7 +63,7 @@ fun HomeScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier.consumeWindowInsets(innerPadding)
-        ){
+        ) {
             AppTopBar(
                 title = {
                     Text(

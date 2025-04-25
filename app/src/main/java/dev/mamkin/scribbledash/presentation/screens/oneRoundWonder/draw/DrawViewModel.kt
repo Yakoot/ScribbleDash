@@ -38,7 +38,7 @@ class DrawViewModel(
         )
 
     fun onAction(action: DrawAction) {
-        when(action) {
+        when (action) {
             DrawAction.OnDoneClick -> onDoneClick()
             is DrawAction.OnDraw -> onDraw(action.offset)
             is DrawAction.OnNewPathStart -> onNewPathStart(action.offset)
@@ -50,32 +50,38 @@ class DrawViewModel(
 
     private fun onPathEnd() {
         val currentPathData = state.value.currentPath ?: return
-        _state.update { it.copy(
-            currentPath = null,
-            paths = it.paths + currentPathData,
-            isDoneEnabled = true,
-            isUndoEnabled = true,
-            isRedoEnabled = false
-        ) }
+        _state.update {
+            it.copy(
+                currentPath = null,
+                paths = it.paths + currentPathData,
+                isDoneEnabled = true,
+                isUndoEnabled = true,
+                isRedoEnabled = false
+            )
+        }
     }
 
     private fun onNewPathStart(offset: Offset) {
-        _state.update { it.copy(
-            currentPath = PathData(
-                id = System.currentTimeMillis().toString(),
-                color = it.selectedColor,
-                path = listOf(offset)
+        _state.update {
+            it.copy(
+                currentPath = PathData(
+                    id = System.currentTimeMillis().toString(),
+                    color = it.selectedColor,
+                    path = listOf(offset)
+                )
             )
-        ) }
+        }
     }
 
     private fun onDraw(offset: Offset) {
         val currentPathData = state.value.currentPath ?: return
-        _state.update { it.copy(
-            currentPath = currentPathData.copy(
-                path = currentPathData.path + offset
+        _state.update {
+            it.copy(
+                currentPath = currentPathData.copy(
+                    path = currentPathData.path + offset
+                )
             )
-        ) }
+        }
     }
 
     private fun onDoneClick() {

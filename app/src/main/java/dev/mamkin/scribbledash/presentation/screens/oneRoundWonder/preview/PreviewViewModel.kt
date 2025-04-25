@@ -44,7 +44,10 @@ class PreviewViewModel(
         )
 
     init {
-        Log.d("ViewModelScope", "PreviewViewModel INIT, injected GameViewModel hashCode: ${gameViewModel.hashCode()}")
+        Log.d(
+            "ViewModelScope",
+            "PreviewViewModel INIT, injected GameViewModel hashCode: ${gameViewModel.hashCode()}"
+        )
     }
 
     private fun startCountdown() = viewModelScope.launch {

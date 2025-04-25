@@ -44,9 +44,6 @@ class GameViewModel(
     private var exampleImagePaths: List<Path> = emptyList()
     private var userImagePaths: List<Path> = emptyList()
 
-    /**
-     * Preloads images into the cache without updating the main state flow immediately.
-     */
     fun preloadImagesToCache() {
         if (cachedImages != null) return // Already cached/preloaded
 
@@ -77,12 +74,16 @@ class GameViewModel(
 
         if (images.isEmpty()) {
             Log.e("GameViewModel", "No images loaded or available to select from.")
-            // Return a default placeholder or handle error appropriately
             return emptyList()
         }
 
         val randomImage = images[Random.nextInt(images.size)]
-        val scaledImagePaths: List<Path> = randomImage.paths.scaleToNewSize(Size(randomImage.viewportWidth, randomImage.viewportHeight), canvasSize)
+        val scaledImagePaths: List<Path> = randomImage.paths.scaleToNewSize(
+            Size(
+                randomImage.viewportWidth,
+                randomImage.viewportHeight
+            ), canvasSize
+        )
         this.exampleImagePaths = scaledImagePaths // Store the selected image
         return scaledImagePaths // Return the selected image
     }
