@@ -21,7 +21,9 @@ import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 import dev.mamkin.scribbledash.di.appModule
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
+import dev.mamkin.scribbledash.presentation.screens.speedDraw.SpeedDrawViewModel
 import dev.mamkin.scribbledash.ui.components.AppBottomBar
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import org.koin.android.ext.koin.androidContext
@@ -71,7 +73,19 @@ class MainActivity : ComponentActivity() {
                                 val parentEntry = remember(navBackStackEntry) {
                                     navController.getBackStackEntry(NavGraphs.oneRoundWonder.route)
                                 }
-                                dependency(koinViewModel<GameViewModel>(viewModelStoreOwner = parentEntry))
+                                dependency(koinViewModel<OneRoundWonderViewModel>(viewModelStoreOwner = parentEntry))
+                            }
+                            navGraph(NavGraphs.speedDraw) {
+                                val parentEntry = remember(navBackStackEntry) {
+                                    navController.getBackStackEntry(NavGraphs.speedDraw.route)
+                                }
+                                dependency(koinViewModel<SpeedDrawViewModel>(viewModelStoreOwner = parentEntry))
+                            }
+                            navGraph(NavGraphs.endlessMode) {
+                                val parentEntry = remember(navBackStackEntry) {
+                                    navController.getBackStackEntry(NavGraphs.endlessMode.route)
+                                }
+                                dependency(koinViewModel<EndlessModeViewModel>(viewModelStoreOwner = parentEntry))
                             }
                         }
                     )
@@ -80,4 +94,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

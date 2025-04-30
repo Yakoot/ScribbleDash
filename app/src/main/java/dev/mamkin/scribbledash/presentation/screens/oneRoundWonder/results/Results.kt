@@ -37,7 +37,7 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.components.PreviewCanvas
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawGrid
@@ -54,8 +54,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ResultsRoot(
     navigator: DestinationsNavigator,
-    gameViewModel: GameViewModel,
-    viewModel: ResultsViewModel = koinViewModel { parametersOf(gameViewModel) }
+    oneRoundWonderViewModel: OneRoundWonderViewModel,
+    viewModel: ResultsViewModel = koinViewModel { parametersOf(oneRoundWonderViewModel) }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     BackHandler { }

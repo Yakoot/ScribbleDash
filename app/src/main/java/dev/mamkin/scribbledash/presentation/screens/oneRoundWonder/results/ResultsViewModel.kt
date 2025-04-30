@@ -3,7 +3,7 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.results
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.scaleToNewSize
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class ResultsViewModel(
-    private val gameViewModel: GameViewModel
+    private val oneRoundWonderViewModel: OneRoundWonderViewModel
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -40,9 +40,9 @@ class ResultsViewModel(
     }
 
     fun onImageSizeChanged(newSize: Size) {
-        val exampleImage = gameViewModel.getExampleImageForResults()
-        val userImage = gameViewModel.getUserImageForResults()
-        val oldCanvasSize = gameViewModel.getSize()
+        val exampleImage = oneRoundWonderViewModel.getExampleImageForResults()
+        val userImage = oneRoundWonderViewModel.getUserImageForResults()
+        val oldCanvasSize = oneRoundWonderViewModel.getSize()
         val exampleImageScaled = exampleImage.scaleToNewSize(oldCanvasSize, newSize)
         val userImageScaled = userImage.scaleToNewSize(oldCanvasSize, newSize)
         _state.update {
@@ -54,8 +54,8 @@ class ResultsViewModel(
     }
 
     private fun prepareResults() {
-        val rating = gameViewModel.getRating()
-        val percent = gameViewModel.getPercent()
+        val rating = oneRoundWonderViewModel.getRating()
+        val percent = oneRoundWonderViewModel.getPercent()
         _state.update {
             it.copy(
                 rating = rating,

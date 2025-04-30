@@ -86,7 +86,7 @@ fun StatisticsRootScreen() {
                             contentDescription = null
                         )
                     },
-                    text = "Nothing to track...for now",
+                    text = "Highest Speed Draw\naccuracy %",
                     value = "0%"
                 )
                 StatisticsCard(
@@ -96,7 +96,30 @@ fun StatisticsRootScreen() {
                             contentDescription = null
                         )
                     },
-                    text = "Nothing to track...for now",
+                    text = "Most Meh+ drawings\n" +
+                            "in Speed Draw",
+                    value = "0"
+                )
+                StatisticsCard(
+                    icon = {
+                        Image(
+                            painter = painterResource(R.drawable.stat_star),
+                            contentDescription = null
+                        )
+                    },
+                    text = "Highest Endless Mode\n" +
+                            "accuracy %",
+                    value = "100%"
+                )
+                StatisticsCard(
+                    icon = {
+                        Image(
+                            painter = painterResource(R.drawable.stat_palette),
+                            contentDescription = null
+                        )
+                    },
+                    text = "Most drawings completed\n" +
+                            "in Endless Mode",
                     value = "0"
                 )
             }

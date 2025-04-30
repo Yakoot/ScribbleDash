@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import org.koin.core.component.KoinComponent
 import android.graphics.Path as AndroidPath
 
 class PreviewViewModel(
-    private val gameViewModel: GameViewModel
+    private val oneRoundWonderViewModel: OneRoundWonderViewModel
 ) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
@@ -46,7 +46,7 @@ class PreviewViewModel(
     init {
         Log.d(
             "ViewModelScope",
-            "PreviewViewModel INIT, injected GameViewModel hashCode: ${gameViewModel.hashCode()}"
+            "PreviewViewModel INIT, injected GameViewModel hashCode: ${oneRoundWonderViewModel.hashCode()}"
         )
     }
 
@@ -66,8 +66,8 @@ class PreviewViewModel(
     }
 
     fun onSizeChanged(size: Size) {
-        gameViewModel.setCanvasSize(size)
-        val image = gameViewModel.selectAndSetRandomImage()
+        oneRoundWonderViewModel.setCanvasSize(size)
+        val image = oneRoundWonderViewModel.selectAndSetRandomImage()
         _state.update { it.copy(image = image) }
         startCountdown()
     }

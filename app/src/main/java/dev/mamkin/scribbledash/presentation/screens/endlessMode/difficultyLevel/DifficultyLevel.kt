@@ -1,29 +1,28 @@
-package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel
+package dev.mamkin.scribbledash.presentation.screens.endlessMode.difficultyLevel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
-import com.ramcosta.composedestinations.generated.destinations.PreviewRootDestination
-import com.ramcosta.composedestinations.generated.destinations.PreviewRootDestination.invoke
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeGraph
+import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import dev.mamkin.scribbledash.presentation.screens.speedDraw.SpeedDrawGraph
 import dev.mamkin.scribbledash.ui.components.DifficultyLevelScreen
 
-@Destination<OneRoundWonderGraph>(
+@Destination<EndlessModeGraph>(
     start = true,
-    route = "one_round_wonder_difficulty_level_root"
+    route = "endless_mode_difficulty_level_root"
 )
 @Composable
 fun DifficultyLevelRoot(
-    oneRoundWonderViewModel: OneRoundWonderViewModel,
+    endlessModeViewModel: EndlessModeViewModel,
     navigator: DestinationsNavigator,
 ) {
     LaunchedEffect(Unit) {
-        oneRoundWonderViewModel.preloadImagesToCache()
+//        endlessModeViewModel.preloadImagesToCache()
     }
     DifficultyLevelScreen(
         onClose = {
@@ -33,8 +32,8 @@ fun DifficultyLevelRoot(
             )
         },
         onLevelClick = {
-            oneRoundWonderViewModel.setDifficultyLevel(it)
-            navigator.navigate(PreviewRootDestination())
+//            oneRoundWonderViewModel.setDifficultyLevel(it)
+//            navigator.navigate(PreviewRootDestination())
         }
     )
 }

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.ViewModel
 import dev.mamkin.scribbledash.data.repository.GameRepository
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel.DifficultyLevel
+import dev.mamkin.scribbledash.domain.DifficultyLevel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.PathData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewImages
@@ -31,7 +31,7 @@ import android.graphics.Path as AndroidPath
 const val USER_STROKE_WIDTH = 10f
 const val EXAMPLE_STROKE_WIDTH = 10f
 
-class GameViewModel(
+class OneRoundWonderViewModel(
     private val gameRepository: GameRepository
 ) : ViewModel() {
 

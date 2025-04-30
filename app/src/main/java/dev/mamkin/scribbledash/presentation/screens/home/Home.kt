@@ -22,7 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.navgraphs.EndlessModeNavGraph
 import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
+import com.ramcosta.composedestinations.generated.navgraphs.SpeedDrawNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientEnd
@@ -46,8 +48,8 @@ fun HomeRoot(
         onGameModeClick = {
             when (it) {
                 GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderNavGraph)
-                GameMode.SpeedDraw -> navigator.navigate(OneRoundWonderNavGraph)
-                GameMode.EndlessMode -> navigator.navigate(OneRoundWonderNavGraph)
+                GameMode.SpeedDraw -> navigator.navigate(SpeedDrawNavGraph)
+                GameMode.EndlessMode -> navigator.navigate(EndlessModeNavGraph)
             }
         }
     )

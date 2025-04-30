@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -69,7 +70,7 @@ fun GameModeCard(
             Image(
                 painter = painterResource(id = image),
                 contentDescription = text,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).offset(x = 12.dp)
             )
         }
     }

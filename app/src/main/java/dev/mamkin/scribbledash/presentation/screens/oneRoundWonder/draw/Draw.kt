@@ -31,7 +31,7 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.generated.destinations.ResultsRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.AppTopBar
@@ -45,10 +45,10 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DrawRoot(
     navigator: DestinationsNavigator,
-    gameViewModel: GameViewModel,
+    oneRoundWonderViewModel: OneRoundWonderViewModel,
     viewModel: DrawViewModel = koinViewModel {
         parametersOf(
-            gameViewModel
+            oneRoundWonderViewModel
         )
     }
 ) {

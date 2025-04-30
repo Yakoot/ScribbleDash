@@ -3,7 +3,7 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
 class DrawViewModel(
-    private val gameViewModel: GameViewModel
+    private val oneRoundWonderViewModel: OneRoundWonderViewModel
 ) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
@@ -86,7 +86,7 @@ class DrawViewModel(
 
     private fun onDoneClick() {
         val paths = _state.value.paths
-        gameViewModel.saveUserDrawing(paths)
+        oneRoundWonderViewModel.saveUserDrawing(paths)
         viewModelScope.launch {
             _events.send(UiEvent.NavigateToResults)
         }
