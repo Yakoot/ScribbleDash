@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,11 +30,14 @@ import dev.mamkin.scribbledash.ui.theme.SurfaceHigh
 @Composable
 fun GameModeCard(
     modifier: Modifier = Modifier,
+    borderColor: Color = Success,
+    image: Int = R.drawable.one_round_wonder,
+    text: String = "One Round\nWonder",
     onClick: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Success
+            containerColor = borderColor
         ),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(
@@ -54,7 +58,7 @@ fun GameModeCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "One Round\nWonder",
+                text = text,
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -63,8 +67,8 @@ fun GameModeCard(
             )
 
             Image(
-                painter = painterResource(id = R.drawable.one_round_wonder),
-                contentDescription = "One Round Wonder",
+                painter = painterResource(id = image),
+                contentDescription = text,
                 modifier = Modifier.weight(1f)
             )
         }

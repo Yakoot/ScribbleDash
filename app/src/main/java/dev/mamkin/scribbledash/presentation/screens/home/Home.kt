@@ -1,6 +1,7 @@
 package dev.mamkin.scribbledash.presentation.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -29,6 +30,10 @@ import dev.mamkin.scribbledash.ui.theme.BackgroundGradientStart
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.ui.theme.Primary
+import dev.mamkin.scribbledash.ui.theme.Success
+import dev.mamkin.scribbledash.ui.theme.TertiaryContainer
 
 @Destination<RootGraph>(
     start = true
@@ -38,15 +43,19 @@ fun HomeRoot(
     navigator: DestinationsNavigator
 ) {
     HomeScreen(
-        onOneRoundWonderClick = {
-            navigator.navigate(OneRoundWonderNavGraph)
+        onGameModeClick = {
+            when (it) {
+                GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderNavGraph)
+                GameMode.SpeedDraw -> navigator.navigate(OneRoundWonderNavGraph)
+                GameMode.EndlessMode -> navigator.navigate(OneRoundWonderNavGraph)
+            }
         }
     )
 }
 
 @Composable
 fun HomeScreen(
-    onOneRoundWonderClick: () -> Unit,
+    onGameModeClick: (GameMode) -> Unit,
 ) {
     val backgroundGradient = Brush.horizontalGradient(
         colors = listOf(
@@ -94,7 +103,12 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 GameModeCards(
-                    onOneRoundWonderClick = onOneRoundWonderClick
+                    onClick = onGameModeClick,
+                    gameModes = listOf(
+                        GameMode.OneRoundWonder,
+                        GameMode.SpeedDraw,
+                        GameMode.EndlessMode
+                    )
                 )
             }
         }
@@ -107,12 +121,16 @@ fun HomeScreen(
 @Composable
 private fun GameModeCards(
     modifier: Modifier = Modifier,
-    onOneRoundWonderClick: () -> Unit
+    gameModes: List<GameMode> = emptyList(),
+    onClick: (GameMode) -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        GameModeCard(onClick = onOneRoundWonderClick)
+        gameModes.forEach { gameMode ->
+            GameModeCard(onClick = { onClick(gameMode) }, text = gameMode.text, borderColor = gameMode.borderColor, image = gameMode.image)
+        }
     }
 }
 
@@ -121,7 +139,29 @@ private fun GameModeCards(
 private fun Preview() {
     ScribbleDashTheme {
         HomeScreen(
-            onOneRoundWonderClick = {}
+            onGameModeClick = {},
         )
     }
+}
+
+sealed class GameMode(
+    val image: Int,
+    val text: String,
+    val borderColor: Color
+) {
+    object OneRoundWonder : GameMode(
+        image = R.drawable.one_round_wonder,
+        text = "One Round\nWonder",
+        borderColor = Success
+    )
+    object SpeedDraw : GameMode(
+        image = R.drawable.speed_draw,
+        text = "Speed\nDraw",
+        borderColor = Primary
+    )
+    object EndlessMode : GameMode(
+        image = R.drawable.endless_mode,
+        text = "Endless\nMode",
+        borderColor = TertiaryContainer
+    )
 }
