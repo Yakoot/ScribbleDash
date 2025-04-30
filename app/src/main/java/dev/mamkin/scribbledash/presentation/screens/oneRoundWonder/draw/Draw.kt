@@ -1,7 +1,6 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,34 +14,53 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.ResultsRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
+import dev.mamkin.scribbledash.ui.theme.OnSurface
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Destination<OneRoundWonderGraph>
 @Composable
 fun DrawRoot(
-    viewModel: DrawViewModel = viewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    gameViewModel: GameViewModel,
+    viewModel: DrawViewModel = koinViewModel {
+        parametersOf(
+            gameViewModel
+        )
+    }
 ) {
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect { event ->
+            when (event) {
+                UiEvent.NavigateToResults -> {
+                    navigator.navigate(ResultsRootDestination)
+                }
+            }
+        }
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     DrawScreen(
@@ -96,26 +114,32 @@ fun DrawScreen(
                     color = OnBackground
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                Box(
+                Surface(
+                    shadowElevation = 8.dp,
+                    shape = RoundedCornerShape(36.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .background(Color.Transparent)
-                        .shadow(16.dp, RoundedCornerShape(36.dp), clip = false)
-                        .clip(RoundedCornerShape(36.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 ) {
                     DrawingCanvas(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(12.dp)
-                            .clip(RoundedCornerShape(36.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh), // important! same background
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp),
                         paths = state.paths,
                         currentPath = state.currentPath,
                         onAction = onAction
                     )
                 }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Your Drawing",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = OnSurface
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 DrawingControls(onAction = onAction, state = state)
                 Spacer(modifier = Modifier.height(24.dp))
@@ -124,7 +148,6 @@ fun DrawScreen(
         }
     }
 }
-
 
 
 @Preview

@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.difficultyLevel
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.difficultyLevel
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,17 +20,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.generated.destinations.DrawRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.PreviewRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneWonderRound.OneRoundWonderGraph
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderGraph
 import dev.mamkin.scribbledash.ui.components.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
@@ -41,8 +43,12 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 )
 @Composable
 fun DifficultyLevelRoot(
-    navigator: DestinationsNavigator
+    gameViewModel: GameViewModel,
+    navigator: DestinationsNavigator,
 ) {
+    LaunchedEffect(Unit) {
+        gameViewModel.preloadImagesToCache()
+    }
     DifficultyLevelScreen(
         onClose = {
             navigator.popBackStack(
@@ -51,7 +57,8 @@ fun DifficultyLevelRoot(
             )
         },
         onLevelClick = {
-            navigator.navigate(DrawRootDestination)
+            gameViewModel.setDifficultyLevel(it)
+            navigator.navigate(PreviewRootDestination())
         }
     )
 }
@@ -148,10 +155,10 @@ fun LevelSelector(
     }
 }
 
-enum class DifficultyLevel {
-    Beginner,
-    Challenging,
-    Master
+enum class DifficultyLevel(val multiplier: Int) {
+    Beginner(15),
+    Challenging(7),
+    Master(4)
 }
 
 data class Level(

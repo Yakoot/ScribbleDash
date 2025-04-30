@@ -1,17 +1,27 @@
-package dev.mamkin.scribbledash.presentation.screens.oneWonderRound.draw
+package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
-class DrawViewModel : ViewModel() {
+class DrawViewModel(
+    private val gameViewModel: GameViewModel
+) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
+
+    private val _events = Channel<UiEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     private val _state = MutableStateFlow(DrawState())
     val state = _state
@@ -28,8 +38,8 @@ class DrawViewModel : ViewModel() {
         )
 
     fun onAction(action: DrawAction) {
-        when(action) {
-            DrawAction.OnClearCanvasClick -> onClearCanvasClick()
+        when (action) {
+            DrawAction.OnDoneClick -> onDoneClick()
             is DrawAction.OnDraw -> onDraw(action.offset)
             is DrawAction.OnNewPathStart -> onNewPathStart(action.offset)
             DrawAction.OnPathEnd -> onPathEnd()
@@ -40,42 +50,46 @@ class DrawViewModel : ViewModel() {
 
     private fun onPathEnd() {
         val currentPathData = state.value.currentPath ?: return
-        _state.update { it.copy(
-            currentPath = null,
-            paths = it.paths + currentPathData,
-            isClearEnabled = true,
-            isUndoEnabled = true,
-            isRedoEnabled = false
-        ) }
+        _state.update {
+            it.copy(
+                currentPath = null,
+                paths = it.paths + currentPathData,
+                isDoneEnabled = true,
+                isUndoEnabled = true,
+                isRedoEnabled = false
+            )
+        }
     }
 
     private fun onNewPathStart(offset: Offset) {
-        _state.update { it.copy(
-            currentPath = PathData(
-                id = System.currentTimeMillis().toString(),
-                color = it.selectedColor,
-                path = listOf(offset)
+        _state.update {
+            it.copy(
+                currentPath = PathData(
+                    id = System.currentTimeMillis().toString(),
+                    color = it.selectedColor,
+                    path = listOf(offset)
+                )
             )
-        ) }
+        }
     }
 
     private fun onDraw(offset: Offset) {
         val currentPathData = state.value.currentPath ?: return
-        _state.update { it.copy(
-            currentPath = currentPathData.copy(
-                path = currentPathData.path + offset
+        _state.update {
+            it.copy(
+                currentPath = currentPathData.copy(
+                    path = currentPathData.path + offset
+                )
             )
-        ) }
+        }
     }
 
-    private fun onClearCanvasClick() {
-        _state.update { it.copy(
-            currentPath = null,
-            paths = emptyList(),
-            isClearEnabled = false,
-            isUndoEnabled = false,
-            isRedoEnabled = false
-        ) }
+    private fun onDoneClick() {
+        val paths = _state.value.paths
+        gameViewModel.saveUserDrawing(paths)
+        viewModelScope.launch {
+            _events.send(UiEvent.NavigateToResults)
+        }
     }
 
     private fun onUndo() {
@@ -90,7 +104,7 @@ class DrawViewModel : ViewModel() {
                 redoPaths = newRedoPaths,
                 isRedoEnabled = newRedoPaths.isNotEmpty(),
                 isUndoEnabled = newPaths.isNotEmpty(),
-                isClearEnabled = newPaths.isNotEmpty()
+                isDoneEnabled = newPaths.isNotEmpty()
             )
         }
     }
@@ -107,8 +121,12 @@ class DrawViewModel : ViewModel() {
                 redoPaths = newRedoPaths,
                 isRedoEnabled = newRedoPaths.isNotEmpty(),
                 isUndoEnabled = newPaths.isNotEmpty(),
-                isClearEnabled = newPaths.isNotEmpty()
+                isDoneEnabled = newPaths.isNotEmpty()
             )
         }
     }
+}
+
+sealed interface UiEvent {
+    data object NavigateToResults : UiEvent
 }

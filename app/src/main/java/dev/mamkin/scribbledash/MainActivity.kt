@@ -14,23 +14,40 @@ import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
+import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.navigation.navGraph
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.contains
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
+import dev.mamkin.scribbledash.di.appModule
+import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.GameViewModel
 import dev.mamkin.scribbledash.ui.components.AppBottomBar
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 100
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        startKoin {
+            androidContext(application)
+            modules(appModule)
+        }
         setContent {
             ScribbleDashTheme {
                 val navController = rememberNavController()
 
-                val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
-                    ?: NavGraphs.root.startDestination
+                val currentDestination: DestinationSpec =
+                    navController.currentDestinationAsState().value
+                        ?: NavGraphs.root.startDestination
 
                 val isBottomBarVisible = remember(currentDestination) {
                     !OneRoundWonderNavGraph.contains(currentDestination)
@@ -48,7 +65,15 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(contentPadding),
                         navController = navController,
-                        navGraph = NavGraphs.root
+                        navGraph = NavGraphs.root,
+                        dependenciesContainerBuilder = {
+                            navGraph(NavGraphs.oneRoundWonder) {
+                                val parentEntry = remember(navBackStackEntry) {
+                                    navController.getBackStackEntry(NavGraphs.oneRoundWonder.route)
+                                }
+                                dependency(koinViewModel<GameViewModel>(viewModelStoreOwner = parentEntry))
+                            }
+                        }
                     )
                 }
             }

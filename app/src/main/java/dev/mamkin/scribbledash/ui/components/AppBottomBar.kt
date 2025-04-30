@@ -10,14 +10,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.ComingSoonRootDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.StatisticsRootDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
 import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.ui.theme.Primary
+import dev.mamkin.scribbledash.ui.theme.TertiaryContainer
 
 @Composable
 fun AppBottomBar(
@@ -35,7 +37,7 @@ fun AppBottomBar(
             val isSelected = currentDestination == destination.direction
             NavigationBarItem(
                 colors = NavigationBarItemDefaults.colors().copy(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = destination.selectedIconColor,
                     selectedIndicatorColor = Color.Transparent,
                     unselectedIconColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 ),
@@ -60,8 +62,12 @@ fun AppBottomBar(
 enum class BottomBarDestination(
     val direction: DirectionDestinationSpec,
     val icon: Int,
-    val enabled: Boolean = true
+    val selectedIconColor: Color,
+    val enabled: Boolean = true,
 ) {
-    ComingSoon(ComingSoonRootDestination, R.drawable.ic_statistics),
-    Home(HomeRootDestination, R.drawable.ic_home),
+    ComingSoon(
+        StatisticsRootDestination, R.drawable.ic_statistics,
+        TertiaryContainer
+    ),
+    Home(HomeRootDestination, R.drawable.ic_home, Primary),
 }
