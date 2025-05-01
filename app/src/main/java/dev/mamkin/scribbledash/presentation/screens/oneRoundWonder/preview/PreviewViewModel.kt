@@ -1,6 +1,5 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
@@ -42,13 +41,6 @@ class PreviewViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = PreviewState()
         )
-
-    init {
-        Log.d(
-            "ViewModelScope",
-            "PreviewViewModel INIT, injected GameViewModel hashCode: ${oneRoundWonderViewModel.hashCode()}"
-        )
-    }
 
     private fun startCountdown() = viewModelScope.launch {
         if (countdownStarted) return@launch // Ensure countdown starts only once

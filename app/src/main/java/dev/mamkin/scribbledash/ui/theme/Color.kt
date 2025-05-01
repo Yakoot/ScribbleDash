@@ -9,6 +9,7 @@ val OnPrimaryOpacity40 = Color(0x66FFFFFF) // White with 40% opacity
 
 val Secondary = Color(0xFFAB5CFA)
 val TertiaryContainer = Color(0xFFFA852C)
+val Pink = Color(0xFFED6363)
 
 // Status colors
 val Error = Color(0xFFEF1242)
