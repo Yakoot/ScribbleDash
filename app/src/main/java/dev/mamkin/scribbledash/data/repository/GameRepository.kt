@@ -3,9 +3,11 @@ package dev.mamkin.scribbledash.data.repository
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Environment
+import android.util.Log
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.PathParser
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
+import dev.mamkin.scribbledash.presentation.models.ImageData
+import dev.mamkin.scribbledash.presentation.models.PreviewImages
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.File
@@ -14,8 +16,53 @@ import android.graphics.Path as AndroidPath
 
 class GameRepository(private val applicationContext: Context) {
 
+    private var cachedImages: List<ImageData>? = null
+
+
+    fun getRandomImage(): ImageData {
+        loadAllImagesToCache()
+        return cachedImages?.random() ?: throw IllegalStateException("No images cached")
+    }
+
+    fun saveBitmapToFile(bitmap: Bitmap, fileName: String): String? {
+        return try {
+            val imagesDir = applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val outputFile = File(imagesDir, fileName)
+
+            outputFile.outputStream().use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
+            }
+
+            outputFile.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun loadAllImagesToCache() {
+        if (cachedImages != null) return // Already cached/preloaded
+
+        val images = PreviewImages.entries.mapNotNull { entry ->
+            try {
+                getImageData(entry.resourceId)
+            } catch (e: Exception) {
+                Log.e(
+                    "GameViewModel",
+                    "Failed to preload image data for resource ID: ${entry.resourceId}",
+                    e
+                )
+                null
+            }
+        }
+        if (images.isEmpty()) {
+            Log.w("GameViewModel", "Warning: No images were preloaded successfully.")
+        }
+        cachedImages = images
+    }
+
     @Throws(IOException::class, XmlPullParserException::class)
-    fun getImageData(idRes: Int): ImageData {
+    private fun getImageData(idRes: Int): ImageData {
         // Используем applicationContext для доступа к ресурсам
         val parser = applicationContext.resources.getXml(idRes)
         var eventType = parser.eventType
@@ -55,7 +102,6 @@ class GameRepository(private val applicationContext: Context) {
             }
             eventType = parser.next()
         }
-        // Важно закрывать парсер после использования
         parser.close()
 
         return ImageData(
@@ -64,22 +110,4 @@ class GameRepository(private val applicationContext: Context) {
             paths = paths
         )
     }
-
-    fun saveBitmapToFile(bitmap: Bitmap, fileName: String): String? {
-        return try {
-            // Используем applicationContext для доступа к файловой системе
-            val imagesDir = applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            val outputFile = File(imagesDir, fileName)
-
-            outputFile.outputStream().use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
-            }
-
-            outputFile.absolutePath
-        } catch (e: Exception) {
-            // Лучше логировать ошибку здесь
-            e.printStackTrace()
-            null
-        }
-    }
-} 
+}

@@ -22,18 +22,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.navgraphs.EndlessModeNavGraph
-import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
-import com.ramcosta.composedestinations.generated.navgraphs.SpeedDrawNavGraph
+import com.ramcosta.composedestinations.generated.destinations.OneRoundWonderRootDestination
+import com.ramcosta.composedestinations.generated.destinations.SpeedDrawRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import dev.mamkin.scribbledash.ui.components.AppTopBar
+import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientEnd
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientStart
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
-import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
-import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.ui.theme.Primary
+import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.Success
 import dev.mamkin.scribbledash.ui.theme.TertiaryContainer
 
@@ -47,9 +46,9 @@ fun HomeRoot(
     HomeScreen(
         onGameModeClick = {
             when (it) {
-                GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderNavGraph)
-                GameMode.SpeedDraw -> navigator.navigate(SpeedDrawNavGraph)
-                GameMode.EndlessMode -> navigator.navigate(EndlessModeNavGraph)
+                GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderRootDestination)
+                GameMode.SpeedDraw -> navigator.navigate(SpeedDrawRootDestination)
+                GameMode.EndlessMode -> {}
             }
         }
     )

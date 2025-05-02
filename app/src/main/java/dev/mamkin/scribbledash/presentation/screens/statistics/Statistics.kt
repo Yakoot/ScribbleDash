@@ -29,7 +29,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.ui.components.AppTopBar
+import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientEnd
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientStart
 import dev.mamkin.scribbledash.ui.theme.OnBackground

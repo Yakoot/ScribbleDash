@@ -1,94 +1,228 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Path
-import android.graphics.RectF
 import android.util.Log
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.mamkin.scribbledash.data.repository.GameRepository
 import dev.mamkin.scribbledash.domain.DifficultyLevel
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.draw.PathData
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.ImageData
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.preview.PreviewImages
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.results.Rating
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.createPaths
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.drawPathsWithThickness
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.moveToTopLeftCorner
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.utils.totalLength
-import kotlin.math.min
+import dev.mamkin.scribbledash.domain.Rating
+import dev.mamkin.scribbledash.presentation.models.PathData
+import dev.mamkin.scribbledash.presentation.utils.calculateCoverage
+import dev.mamkin.scribbledash.presentation.utils.createPaths
+import dev.mamkin.scribbledash.presentation.utils.drawPathsToBitmap
+import dev.mamkin.scribbledash.presentation.utils.scaleToNewSize
+import dev.mamkin.scribbledash.presentation.utils.totalLength
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import kotlin.random.Random
-import android.graphics.Path as AndroidPath
-
-const val USER_STROKE_WIDTH = 10f
-const val EXAMPLE_STROKE_WIDTH = 10f
 
 class OneRoundWonderViewModel(
-    private val gameRepository: GameRepository
+    private val imagesRepository: GameRepository
 ) : ViewModel() {
 
-    private var cachedImages: List<ImageData>? = null
-    private var canvasSize = Size.Zero
+    private var hasLoadedInitialData = false
     private var difficultyLevel: DifficultyLevel? = null
+    private var canvasSize = Size.Zero
+    private var exampleImagePaths: List<Path> = emptyList()
+    private var userImagePaths: List<Path> = emptyList()
     private var finalScore: Int = 0
     private var rating: Rating = Rating.OOPS
 
-    private var exampleImagePaths: List<Path> = emptyList()
-    private var userImagePaths: List<Path> = emptyList()
-
-    fun preloadImagesToCache() {
-        if (cachedImages != null) return // Already cached/preloaded
-
-        val images = PreviewImages.entries.mapNotNull { entry ->
-            try {
-                gameRepository.getImageData(entry.resourceId)
-            } catch (e: Exception) {
-                Log.e(
-                    "GameViewModel",
-                    "Failed to preload image data for resource ID: ${entry.resourceId}",
-                    e
-                )
-                null
+    private val _state = MutableStateFlow<OneRoundWonderState>(OneRoundWonderState.DifficultyLevel)
+    val state = _state
+        .onStart {
+            if (!hasLoadedInitialData) {
+                /** Load initial data here **/
+                hasLoadedInitialData = true
             }
         }
-        if (images.isEmpty()) {
-            Log.w("GameViewModel", "Warning: No images were preloaded successfully.")
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = OneRoundWonderState.DifficultyLevel
+        )
+
+    fun onAction(action: OneRoundWonderAction) {
+        when (action) {
+            is OneRoundWonderAction.LevelClick -> onLevelSelected(action.level)
+            is OneRoundWonderAction.SizeChanged -> onSizeChanged(action.size)
+            is OneRoundWonderAction.Draw -> onDrawAction(action.drawAction)
+            is OneRoundWonderAction.ResultsImageSizeChanged -> onResultsImageSizeChanged(action.size)
+            is OneRoundWonderAction.TryAgain -> restartGame()
+            else -> {}
         }
-        cachedImages = images
     }
 
-    fun setDifficultyLevel(level: DifficultyLevel) {
-        this.difficultyLevel = level
+    fun onResultsImageSizeChanged(size: Size) {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Results) return
+        val exampleImageScaled = exampleImagePaths.scaleToNewSize(canvasSize, size)
+        val userImageScaled = userImagePaths.scaleToNewSize(canvasSize, size)
+        _state.value = state.copy(
+            exampleImageData = exampleImageScaled,
+            userImageData = userImageScaled
+        )
     }
 
-    fun selectAndSetRandomImage(): List<Path> {
-        val images = cachedImages ?: loadImages() // Load images on demand if cache is empty
-
-        if (images.isEmpty()) {
-            Log.e("GameViewModel", "No images loaded or available to select from.")
-            return emptyList()
+    fun onDrawAction(action: DrawAction) {
+        when (action) {
+            DrawAction.OnDoneClick -> onDoneClick()
+            is DrawAction.OnDraw -> onDraw(action.offset)
+            is DrawAction.OnNewPathStart -> onNewPathStart(action.offset)
+            DrawAction.OnPathEnd -> onPathEnd()
+            DrawAction.OnRedo -> onRedo()
+            DrawAction.OnUndo -> onUndo()
         }
+    }
 
-        val randomImage = images[Random.nextInt(images.size)]
+    private fun onPathEnd() {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Draw) return
+        val currentPathData = state.drawState.currentPath ?: return
+        val drawState = state.drawState
+        _state.value = OneRoundWonderState.Draw(
+            drawState = drawState.copy(
+                currentPath = null,
+                paths = drawState.paths + currentPathData,
+                isDoneEnabled = true,
+                isUndoEnabled = true,
+                isRedoEnabled = false
+            )
+        )
+    }
+
+    private fun onNewPathStart(offset: Offset) {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Draw) return
+        val drawState = state.drawState
+        _state.value = OneRoundWonderState.Draw(
+            drawState = drawState.copy(
+                currentPath = PathData(
+                    id = System.currentTimeMillis().toString(),
+                    color = drawState.selectedColor,
+                    path = listOf(offset)
+                )
+            )
+        )
+    }
+
+    private fun onDraw(offset: Offset) {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Draw) return
+        val currentPathData = state.drawState.currentPath ?: return
+        val drawState = state.drawState
+        _state.value = OneRoundWonderState.Draw(
+            drawState = drawState.copy(
+                currentPath = currentPathData.copy(
+                    path = currentPathData.path + offset
+                )
+            )
+        )
+    }
+
+    private fun onDoneClick() {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Draw) return
+        val drawState = state.drawState
+        this.userImagePaths = drawState.paths.createPaths()
+        calculateFinalScore()
+        _state.value = OneRoundWonderState.Results(
+            rating = rating,
+            percent = finalScore.toString(),
+            exampleImageData = exampleImagePaths,
+            userImageData = userImagePaths
+        )
+    }
+
+    private fun onUndo() {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Draw) return
+        val drawState = state.drawState
+        val paths = drawState.paths
+        if (paths.isEmpty()) return
+        val lastItem = paths.last()
+        val newPaths = paths.dropLast(1)
+        val newRedoPaths = (drawState.redoPaths + lastItem).takeLast(5)
+        _state.value = OneRoundWonderState.Draw(
+            drawState = drawState.copy(
+                paths = newPaths,
+                redoPaths = newRedoPaths,
+                isRedoEnabled = newRedoPaths.isNotEmpty(),
+                isUndoEnabled = newPaths.isNotEmpty(),
+                isDoneEnabled = newPaths.isNotEmpty()
+            )
+        )
+    }
+
+    private fun onRedo() {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Draw) return
+        val drawState = state.drawState
+        val redoPaths = drawState.redoPaths
+        if (redoPaths.isEmpty()) return
+        val lastItem = redoPaths.last()
+        val newPaths = drawState.paths + lastItem
+        val newRedoPaths = redoPaths.dropLast(1)
+        _state.value = OneRoundWonderState.Draw(
+            drawState = drawState.copy(
+                paths = newPaths,
+                redoPaths = newRedoPaths,
+                isRedoEnabled = newRedoPaths.isNotEmpty(),
+                isUndoEnabled = newPaths.isNotEmpty(),
+                isDoneEnabled = newPaths.isNotEmpty()
+            )
+        )
+    }
+
+    private fun onSizeChanged(size: Size) {
+        canvasSize = size
+        val randomImage = imagesRepository.getRandomImage()
         val scaledImagePaths: List<Path> = randomImage.paths.scaleToNewSize(
             Size(
                 randomImage.viewportWidth,
                 randomImage.viewportHeight
             ), canvasSize
         )
-        this.exampleImagePaths = scaledImagePaths // Store the selected image
-        return scaledImagePaths // Return the selected image
+        this.exampleImagePaths = scaledImagePaths
+        _state.value = OneRoundWonderState.Preview(
+            image = scaledImagePaths
+        )
+        startCountdown()
     }
 
-    fun calculateFinalScore() {
+    private fun onLevelSelected(level: DifficultyLevel) {
+        difficultyLevel = level
+        _state.value = OneRoundWonderState.Preview()
+    }
+
+    private fun startCountdown() = viewModelScope.launch {
+        val state = _state.value
+        if (state !is OneRoundWonderState.Preview) return@launch
+        val start = state.secondsLeft
+        for (sec in start downTo 0) {
+            _state.update { state.copy(secondsLeft = sec) }
+            if (sec == 0) {
+                openDrawScreen()
+                return@launch
+            }
+            delay(1_000L)
+        }
+    }
+
+    private fun openDrawScreen() {
+        _state.value = OneRoundWonderState.Draw()
+    }
+
+    private fun calculateFinalScore() {
         if (canvasSize == Size.Zero) {
             Log.w("GameViewModel", "Cannot generate example bitmap: canvasSize is Zero.")
             return
@@ -130,171 +264,14 @@ class OneRoundWonderViewModel(
         rating = Rating.fromScore(finalScore)
     }
 
-    /**
-     * Loads images if not already cached. Does NOT update the state flow directly.
-     */
-    private fun loadImages(): List<ImageData> {
-        cachedImages?.let { return it }
-
-        val images = PreviewImages.entries.mapNotNull { entry ->
-            try {
-                gameRepository.getImageData(entry.resourceId)
-            } catch (e: Exception) {
-                Log.e(
-                    "GameViewModel",
-                    "Failed to load image data for resource ID: ${entry.resourceId}",
-                    e
-                )
-                null
-            }
-        }
-
-        if (images.isEmpty()) {
-            Log.w("GameViewModel", "Warning: No images were loaded successfully.")
-        }
-
-        cachedImages = images
-        return images
-    }
-
-    fun saveUserDrawing(data: List<PathData>) {
-        this.userImagePaths = data.createPaths()
-        calculateFinalScore()
-    }
-
-    fun setCanvasSize(size: Size) {
-        this.canvasSize = size
-    }
-
-    fun getSize(): Size {
-        return canvasSize
-    }
-
-    fun getExampleImageForResults(): List<Path> {
-        return exampleImagePaths
-    }
-
-    fun getUserImageForResults(): List<Path> {
-        return userImagePaths
-    }
-
-    fun getRating(): Rating {
-        return rating
-    }
-
-    fun getPercent(): Int {
-        return finalScore
+    private fun restartGame() {
+        _state.value = OneRoundWonderState.DifficultyLevel
+        difficultyLevel = null
+        exampleImagePaths = emptyList()
+        userImagePaths = emptyList()
+        finalScore = 0
     }
 }
 
-
-fun drawPathsToBitmap(
-    paths: List<Path>,
-    size: Size,
-    thickness: Float = EXAMPLE_STROKE_WIDTH,
-    inset: Float = 0f
-): ImageBitmap {
-    val drawScope = CanvasDrawScope()
-    val bitmap = ImageBitmap(size.width.toInt(), size.height.toInt())
-    val canvas = Canvas(bitmap)
-
-    val movedPaths = paths.moveToTopLeftCorner(inset, size.width, size.height)
-
-    drawScope.draw(
-        density = Density(2f),
-        layoutDirection = LayoutDirection.Ltr,
-        canvas = canvas,
-        size = size,
-    ) {
-        drawPathsWithThickness(movedPaths, thickness)
-    }
-    return bitmap
-}
-
-fun calculateTotalBounds(paths: List<AndroidPath>): RectF {
-    if (paths.isEmpty()) return RectF()
-
-    val tempBounds = RectF()
-    val totalBounds = RectF().also { first ->
-        paths[0].computeBounds(tempBounds, true)
-        first.set(tempBounds)
-    }
-
-    for (i in 1 until paths.size) {
-        paths[i].computeBounds(tempBounds, true)
-        totalBounds.union(tempBounds)
-    }
-
-    return totalBounds
-}
-
-fun calculateCoverage(
-    userBmp: Bitmap,
-    exampleBmp: Bitmap
-): Float {
-    // 1) size check
-    require(
-        userBmp.width == exampleBmp.width &&
-                userBmp.height == exampleBmp.height
-    ) {
-        "Bitmaps must be the same dimensions"
-    }
-
-    val width = userBmp.width
-    val height = userBmp.height
-    val totalPixels = width * height
-
-    // 2) bulk-read all pixels
-    val userPixels = IntArray(totalPixels)
-    val examplePixels = IntArray(totalPixels)
-    userBmp.getPixels(userPixels, 0, width, 0, 0, width, height)
-    exampleBmp.getPixels(examplePixels, 0, width, 0, 0, width, height)
-
-    // 3) compare
-    var visibleUserPixels = 0
-    var matchedUserPixels = 0
-
-    for (i in 0 until totalPixels) {
-        val userAlpha = Color.alpha(userPixels[i])
-        val exampleAlpha = Color.alpha(examplePixels[i])
-
-        // skip if both are transparent
-        if (userAlpha == 0 && exampleAlpha == 0) continue
-
-        // count every non-transparent user pixel
-        if (userAlpha != 0) {
-            visibleUserPixels++
-            if (exampleAlpha != 0) {
-                matchedUserPixels++
-            }
-        }
-    }
-
-    // 4) avoid divide-by-zero
-    if (visibleUserPixels == 0) return 0f
-
-    return matchedUserPixels.toFloat() / visibleUserPixels.toFloat()
-}
-
-fun List<Path>.scaleToNewSize(
-    fromSize: Size,
-    toSize: Size
-): List<Path> {
-    if (fromSize.width <= 0f || fromSize.height <= 0f) {
-        println("Warning: Invalid initial size")
-        return emptyList()
-    }
-
-    val scaleX = toSize.width / fromSize.width
-    val scaleY = toSize.height / fromSize.height
-    val scale = min(scaleX, scaleY)
-    val matrix = android.graphics.Matrix().apply {
-        setScale(scale, scale)
-    }
-
-    return this.map { original ->
-        AndroidPath(original).apply {
-            transform(matrix)
-        }
-    }
-}
+const val USER_STROKE_WIDTH = 10f
+const val EXAMPLE_STROKE_WIDTH = 10f
