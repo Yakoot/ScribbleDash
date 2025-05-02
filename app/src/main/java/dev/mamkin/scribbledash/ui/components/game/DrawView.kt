@@ -17,11 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.DrawAction
 import dev.mamkin.scribbledash.presentation.models.DrawState
+import dev.mamkin.scribbledash.presentation.utils.drawGrid
+import dev.mamkin.scribbledash.ui.components.draw.DrawAction
 import dev.mamkin.scribbledash.ui.components.draw.DrawingCanvas
 import dev.mamkin.scribbledash.ui.components.draw.DrawingControls
-import dev.mamkin.scribbledash.presentation.utils.drawGrid
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
 

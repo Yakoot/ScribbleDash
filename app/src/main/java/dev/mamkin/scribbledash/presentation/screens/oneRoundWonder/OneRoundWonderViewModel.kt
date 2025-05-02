@@ -11,11 +11,13 @@ import dev.mamkin.scribbledash.data.repository.GameRepository
 import dev.mamkin.scribbledash.domain.DifficultyLevel
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.presentation.models.PathData
+import dev.mamkin.scribbledash.presentation.models.USER_STROKE_WIDTH
 import dev.mamkin.scribbledash.presentation.utils.calculateCoverage
 import dev.mamkin.scribbledash.presentation.utils.createPaths
 import dev.mamkin.scribbledash.presentation.utils.drawPathsToBitmap
 import dev.mamkin.scribbledash.presentation.utils.scaleToNewSize
 import dev.mamkin.scribbledash.presentation.utils.totalLength
+import dev.mamkin.scribbledash.ui.components.draw.DrawAction
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -273,5 +275,4 @@ class OneRoundWonderViewModel(
     }
 }
 
-const val USER_STROKE_WIDTH = 10f
 const val EXAMPLE_STROKE_WIDTH = 10f

@@ -3,21 +3,17 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
 import dev.mamkin.scribbledash.ui.components.game.DrawView
@@ -64,14 +60,8 @@ fun OneRoundWonderScreen(
         ) {
             AppTopBar(
                 actions = {
-                    IconButton(
-                        onClick = { onAction(OneRoundWonderAction.Close) }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_close),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = null
-                        )
+                    AppCloseIcon {
+                        onAction(OneRoundWonderAction.Close)
                     }
                 }
             )

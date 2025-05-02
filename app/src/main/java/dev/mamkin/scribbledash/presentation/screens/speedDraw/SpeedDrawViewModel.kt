@@ -11,7 +11,7 @@ class SpeedDrawViewModel : ViewModel() {
 
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(SpeedDrawState())
+    private val _state = MutableStateFlow(SpeedDrawState.DifficultyLevel)
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
@@ -22,13 +22,12 @@ class SpeedDrawViewModel : ViewModel() {
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = SpeedDrawState()
+            initialValue = SpeedDrawState.DifficultyLevel
         )
 
     fun onAction(action: SpeedDrawAction) {
         when (action) {
-            else -> TODO("Handle actions")
+            else -> {}
         }
     }
-
 }

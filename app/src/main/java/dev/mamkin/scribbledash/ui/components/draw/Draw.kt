@@ -24,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.mamkin.scribbledash.R
-import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.DrawAction
 import dev.mamkin.scribbledash.presentation.models.DrawState
 import dev.mamkin.scribbledash.presentation.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar

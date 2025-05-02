@@ -16,6 +16,7 @@ fun AppTopBar(
     modifier: Modifier = Modifier,
     titleCentered: Boolean = false,
     title: @Composable () -> Unit = {},
+    timer: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     if (titleCentered) {
@@ -23,6 +24,7 @@ fun AppTopBar(
             modifier = modifier,
             title = title,
             actions = actions,
+            navigationIcon = timer,
             windowInsets = WindowInsets(0, 0, 0, 0),
             colors = TopAppBarDefaults.topAppBarColors().copy(
                 containerColor = Color.Transparent
@@ -33,6 +35,7 @@ fun AppTopBar(
             modifier = modifier,
             title = title,
             actions = actions,
+            navigationIcon = timer,
             windowInsets = WindowInsets(0, 0, 0, 0),
             colors = TopAppBarDefaults.topAppBarColors().copy(
                 containerColor = Color.Transparent
