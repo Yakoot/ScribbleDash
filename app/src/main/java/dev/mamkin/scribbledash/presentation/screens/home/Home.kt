@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.EndlessModeRootDestination
 import com.ramcosta.composedestinations.generated.destinations.OneRoundWonderRootDestination
 import com.ramcosta.composedestinations.generated.destinations.SpeedDrawRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -48,7 +49,7 @@ fun HomeRoot(
             when (it) {
                 GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderRootDestination)
                 GameMode.SpeedDraw -> navigator.navigate(SpeedDrawRootDestination)
-                GameMode.EndlessMode -> {}
+                GameMode.EndlessMode -> navigator.navigate(EndlessModeRootDestination)
             }
         }
     )
@@ -130,7 +131,12 @@ private fun GameModeCards(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         gameModes.forEach { gameMode ->
-            GameModeCard(onClick = { onClick(gameMode) }, text = gameMode.text, borderColor = gameMode.borderColor, image = gameMode.image)
+            GameModeCard(
+                onClick = { onClick(gameMode) },
+                text = gameMode.text,
+                borderColor = gameMode.borderColor,
+                image = gameMode.image
+            )
         }
     }
 }
@@ -155,11 +161,13 @@ sealed class GameMode(
         text = "One Round\nWonder",
         borderColor = Success
     )
+
     object SpeedDraw : GameMode(
         image = R.drawable.speed_draw,
         text = "Speed\nDraw",
         borderColor = Primary
     )
+
     object EndlessMode : GameMode(
         image = R.drawable.endless_mode,
         text = "Endless\nMode",

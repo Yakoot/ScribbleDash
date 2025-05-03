@@ -69,9 +69,6 @@ class StatisticsRepository(
             preferences[PreferencesKeys.ENDLESS_MODE_COUNT] ?: 0
         }
 
-    /**
-     * Updates the highest speed draw score only if the new score is higher.
-     */
     suspend fun updateHighestSpeedDrawScore(newScore: Int) {
         dataStore.edit { preferences ->
             val currentScore = preferences[PreferencesKeys.HIGHEST_SPEED_DRAW_SCORE] ?: 0
@@ -81,9 +78,6 @@ class StatisticsRepository(
         }
     }
 
-    /**
-     * Updates the count of completed speed draw games if the new count is higher.
-     */
     suspend fun updateSpeedDrawCount(newCount: Int) {
         dataStore.edit { preferences ->
             val currentCount = preferences[PreferencesKeys.SPEED_DRAW_COUNT] ?: 0
@@ -93,9 +87,6 @@ class StatisticsRepository(
         }
     }
 
-    /**
-     * Updates the highest endless mode score only if the new score is higher.
-     */
     suspend fun updateHighestEndlessModeScore(newScore: Int) {
         dataStore.edit { preferences ->
             val currentScore = preferences[PreferencesKeys.HIGHEST_ENDLESS_MODE_SCORE] ?: 0
@@ -105,13 +96,12 @@ class StatisticsRepository(
         }
     }
 
-    /**
-     * Increments the count of completed endless mode games.
-     */
-    suspend fun incrementEndlessModeCount() {
+    suspend fun updateEndlessModeCount(newCount: Int) {
         dataStore.edit { preferences ->
             val currentCount = preferences[PreferencesKeys.ENDLESS_MODE_COUNT] ?: 0
-            preferences[PreferencesKeys.ENDLESS_MODE_COUNT] = currentCount + 1
+            if (newCount > currentCount) {
+                preferences[PreferencesKeys.ENDLESS_MODE_COUNT] = newCount
+            }
         }
     }
 } 

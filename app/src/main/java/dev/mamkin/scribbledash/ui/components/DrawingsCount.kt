@@ -23,7 +23,7 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.headlineXSmall
 
 @Composable
-fun PaletteStat(
+fun DrawingsCount(
     modifier: Modifier = Modifier,
     count: Int = 0,
     newHighScore: Boolean = false
@@ -59,8 +59,7 @@ fun PaletteStat(
     ) {
         Box(
             modifier = Modifier
-                .width(width)
-            ,
+                .width(width),
             contentAlignment = Alignment.CenterEnd,
         ) {
             Box(
@@ -103,8 +102,8 @@ fun PaletteStat(
 private fun Preview() {
     ScribbleDashTheme {
         Column {
-            PaletteStat()
-            PaletteStat(
+            DrawingsCount()
+            DrawingsCount(
                 newHighScore = true
             )
         }

@@ -3,8 +3,9 @@ package dev.mamkin.scribbledash.di
 import StatisticsRepository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import dev.mamkin.scribbledash.data.repository.GameRepository
+import dev.mamkin.scribbledash.data.repository.ImagesRepository
 import dev.mamkin.scribbledash.dataStore
+import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
 import dev.mamkin.scribbledash.presentation.screens.speedDraw.SpeedDrawViewModel
 import dev.mamkin.scribbledash.presentation.screens.statistics.StatisticsViewModel
@@ -21,11 +22,12 @@ val appModule = module {
     single<DataStore<Preferences>> { androidApplication().dataStore }
 
     // Repositories
-    single { GameRepository(androidContext()) }
+    single { ImagesRepository(androidContext()) }
     singleOf(::StatisticsRepository) // Эквивалентно single { StatisticsRepository(get()) }
 
     // ViewModels
     viewModel { SpeedDrawViewModel(get(), get()) } // Добавляем StatisticsRepository
+    viewModel { EndlessModeViewModel(get(), get()) } // Добавляем StatisticsRepository
     viewModel { OneRoundWonderViewModel(get()) }
     viewModel { StatisticsViewModel(get()) } // Регистрируем ViewModel
 }

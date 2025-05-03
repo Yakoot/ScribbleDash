@@ -14,7 +14,7 @@ import java.io.File
 import java.io.IOException
 import android.graphics.Path as AndroidPath
 
-class GameRepository(private val applicationContext: Context) {
+class ImagesRepository(private val applicationContext: Context) {
 
     private var cachedImages: List<ImageData>? = null
 

@@ -38,8 +38,7 @@ fun Timer(
                     )
                 } else Modifier
             )
-            .padding(4.dp)
-        ,
+            .padding(4.dp),
         shadowElevation = 8.dp,
         shape = CircleShape
     ) {

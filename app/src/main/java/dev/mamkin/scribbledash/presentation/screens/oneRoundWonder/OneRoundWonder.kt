@@ -21,7 +21,7 @@ import dev.mamkin.scribbledash.ui.components.draw.DrawViewModel
 import dev.mamkin.scribbledash.ui.components.draw.measureWithoutPadding
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
 import dev.mamkin.scribbledash.ui.components.game.PreviewView
-import dev.mamkin.scribbledash.ui.components.game.ResultsView
+import dev.mamkin.scribbledash.ui.components.game.RoundResultsView
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -41,13 +41,14 @@ fun OneRoundWonderRoot(
         ),
         state = state,
         onAction = {
-            when(it) {
+            when (it) {
                 is OneRoundWonderAction.Close -> {
                     navigator.popBackStack(
                         route = HomeRootDestination,
                         inclusive = false
                     )
                 }
+
                 else -> viewModel.onAction(action = it)
             }
         }
@@ -82,12 +83,14 @@ fun OneRoundWonderScreen(
                         }
                     )
                 }
+
                 is OneRoundWonderState.Preview -> {
                     PreviewView(
                         image = state.image,
                         secondsLeft = state.secondsLeft,
                     )
                 }
+
                 is OneRoundWonderState.Draw -> {
                     val drawViewModel = viewModel<DrawViewModel>()
                     drawViewModel.clear()
@@ -98,8 +101,9 @@ fun OneRoundWonderScreen(
                         }
                     )
                 }
+
                 is OneRoundWonderState.Results -> {
-                    ResultsView(
+                    RoundResultsView(
                         percent = state.percent,
                         userImageData = state.userImageData,
                         exampleImageData = state.exampleImageData,

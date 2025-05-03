@@ -1,7 +1,5 @@
 package dev.mamkin.scribbledash.presentation.utils
 
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Path
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
@@ -9,7 +7,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-
 
 
 fun drawPathsToBitmap(

@@ -70,7 +70,9 @@ fun GameModeCard(
             Image(
                 painter = painterResource(id = image),
                 contentDescription = text,
-                modifier = Modifier.weight(1f).offset(x = 12.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .offset(x = 12.dp)
             )
         }
     }

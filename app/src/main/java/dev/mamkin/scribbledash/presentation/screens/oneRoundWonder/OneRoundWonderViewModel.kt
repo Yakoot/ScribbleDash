@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.mamkin.scribbledash.data.repository.GameRepository
+import dev.mamkin.scribbledash.data.repository.ImagesRepository
 import dev.mamkin.scribbledash.domain.DifficultyLevel
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.domain.calculateResults
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OneRoundWonderViewModel(
-    private val imagesRepository: GameRepository
+    private val imagesRepository: ImagesRepository
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false

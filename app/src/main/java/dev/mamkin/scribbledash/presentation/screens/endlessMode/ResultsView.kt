@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.screens.speedDraw
+package dev.mamkin.scribbledash.presentation.screens.endlessMode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.mamkin.scribbledash.domain.Rating
+import dev.mamkin.scribbledash.presentation.screens.speedDraw.SpeedDrawResults
+import dev.mamkin.scribbledash.presentation.screens.speedDraw.SpeedDrawState
 import dev.mamkin.scribbledash.ui.components.DrawingsCount
 import dev.mamkin.scribbledash.ui.components.RatingText
 import dev.mamkin.scribbledash.ui.components.StarHighScore
@@ -29,9 +31,9 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.labelXLarge
 
 @Composable
-fun SpeedDrawResults(
+fun EndlessModeResults(
     modifier: Modifier = Modifier,
-    state: SpeedDrawState.Results = SpeedDrawState.Results(),
+    state: EndlessModeState.Results = EndlessModeState.Results(),
     onDrawAgainClick: () -> Unit = {},
 ) {
     Column(
@@ -40,7 +42,7 @@ fun SpeedDrawResults(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Time’s up!",
+            text = "Game over!",
             style = MaterialTheme.typography.labelXLarge,
             color = OnBackgroundVariant
         )

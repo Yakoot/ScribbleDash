@@ -9,6 +9,5 @@ sealed interface SpeedDrawAction {
     object DrawAgain : SpeedDrawAction
     data class LevelClick(val level: DifficultyLevel) : SpeedDrawAction
     data class SizeChanged(val size: Size) : SpeedDrawAction
-    data class ResultsImageSizeChanged(val size: Size) : SpeedDrawAction
     data class ImageDrawn(val paths: List<Path>) : SpeedDrawAction
 }

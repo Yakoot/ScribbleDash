@@ -1,25 +1,23 @@
-package dev.mamkin.scribbledash.presentation.screens.speedDraw
+package dev.mamkin.scribbledash.presentation.screens.endlessMode
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import dev.mamkin.scribbledash.domain.Rating
+import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeAction.ImageDrawn
+import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeAction.LevelClick
 import dev.mamkin.scribbledash.ui.components.DrawingsCount
-import dev.mamkin.scribbledash.ui.components.Timer
 import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.components.draw.DrawView
@@ -32,24 +30,23 @@ import org.koin.androidx.compose.koinViewModel
 
 @Destination<RootGraph>
 @Composable
-fun SpeedDrawRoot(
-    viewModel: SpeedDrawViewModel = koinViewModel(),
+fun EndlessModeRoot(
+    viewModel: EndlessModeViewModel = koinViewModel(),
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val appBarState by viewModel.appBarState.collectAsStateWithLifecycle()
+    val drawingsCount by viewModel.drawingsCount.collectAsStateWithLifecycle()
 
-    SpeedDrawScreen(
+    EndlessModeScreen(
         modifier = Modifier.measureWithoutPadding(
             onSizeChanged = {
-                viewModel.onAction(SpeedDrawAction.SizeChanged(it))
+                viewModel.onAction(EndlessModeAction.SizeChanged(it))
             }
         ),
         state = state,
-        appBarState = appBarState,
         onAction = {
             when (it) {
-                is SpeedDrawAction.Close -> {
+                is EndlessModeAction.Close -> {
                     navigator.popBackStack(
                         route = HomeRootDestination,
                         inclusive = false
@@ -58,16 +55,17 @@ fun SpeedDrawRoot(
 
                 else -> viewModel.onAction(action = it)
             }
-        }
+        },
+        drawingsCount = drawingsCount
     )
 }
 
 @Composable
-fun SpeedDrawScreen(
+fun EndlessModeScreen(
     modifier: Modifier = Modifier,
-    state: SpeedDrawState,
-    onAction: (SpeedDrawAction) -> Unit,
-    appBarState: SpeedDrawAppBarState,
+    state: EndlessModeState,
+    onAction: (EndlessModeAction) -> Unit,
+    drawingsCount: Int,
 ) {
     Scaffold(
         modifier = modifier
@@ -76,11 +74,11 @@ fun SpeedDrawScreen(
         Column(
             modifier = Modifier.consumeWindowInsets(innerPadding)
         ) {
-            if (state is SpeedDrawState.DifficultyLevel || state is SpeedDrawState.Results) {
+            if (state is EndlessModeState.DifficultyLevel || state is EndlessModeState.Results) {
                 AppTopBar(
                     actions = {
                         AppCloseIcon {
-                            onAction(SpeedDrawAction.Close)
+                            onAction(EndlessModeAction.Close)
                         }
                     },
                 )
@@ -88,21 +86,12 @@ fun SpeedDrawScreen(
                 AppTopBar(
                     actions = {
                         AppCloseIcon {
-                            onAction(SpeedDrawAction.Close)
-                        }
-                    },
-                    timer = {
-                        Row {
-                            Spacer(Modifier.width(10.dp))
-                            Timer(
-                                text = appBarState.remainingTime,
-                                isRed = appBarState.timerRed
-                            )
+                            onAction(EndlessModeAction.Close)
                         }
                     },
                     title = {
                         DrawingsCount(
-                            count = appBarState.drawingsCompleted,
+                            count = drawingsCount,
                         )
                     },
                     titleCentered = true
@@ -110,38 +99,53 @@ fun SpeedDrawScreen(
             }
 
             when (state) {
-                SpeedDrawState.DifficultyLevel -> {
+                EndlessModeState.DifficultyLevel -> {
                     DifficultyLevelView(
                         onLevelClick = {
-                            onAction(SpeedDrawAction.LevelClick(it))
+                            onAction(LevelClick(it))
                         }
                     )
                 }
 
-                is SpeedDrawState.Preview -> {
+                is EndlessModeState.Preview -> {
                     PreviewView(
                         image = state.image,
                         secondsLeft = state.secondsLeft,
                     )
                 }
 
-                is SpeedDrawState.Draw -> {
+                is EndlessModeState.Draw -> {
                     val drawViewModel = viewModel<DrawViewModel>()
                     DrawView(
                         viewModel = drawViewModel,
                         onDone = {
-                            onAction(SpeedDrawAction.ImageDrawn(it))
+                            onAction(ImageDrawn(it))
                             drawViewModel.clear()
                         }
                     )
                 }
 
-                is SpeedDrawState.Results -> {
-                    SpeedDrawResults(
+                is EndlessModeState.Results -> {
+                    EndlessModeResults(
                         state = state,
                         onDrawAgainClick = {
-                            onAction(SpeedDrawAction.DrawAgain)
+                            onAction(EndlessModeAction.DrawAgain)
                         },
+                    )
+                }
+
+                is EndlessModeState.RoundResults -> {
+                    RoundResultsView(
+                        state = state,
+                        onFinish = {
+                            onAction(EndlessModeAction.Finish)
+                        },
+                        onNext = {
+                            onAction(EndlessModeAction.NextDrawing)
+                        },
+                        onImageSizeChanged = {
+                            onAction(EndlessModeAction.ResultsImageSizeChanged(it))
+                        }
                     )
                 }
             }
@@ -151,48 +155,19 @@ fun SpeedDrawScreen(
 
 @Preview
 @Composable
-private fun PreviewDifficultyLevel() {
+private fun PreviewRoundResults() {
     ScribbleDashTheme {
-        SpeedDrawScreen(
-            state = SpeedDrawState.DifficultyLevel,
+        EndlessModeScreen(
+            state = EndlessModeState.RoundResults(
+                percent = "0",
+                exampleImageData = emptyList(),
+                userImageData = emptyList(),
+                rating = Rating.OOPS,
+                showCheckImage = false,
+                showNextButton = false,
+            ),
             onAction = {},
-            appBarState = SpeedDrawAppBarState()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewPreview() {
-    ScribbleDashTheme {
-        SpeedDrawScreen(
-            state = SpeedDrawState.Preview(),
-            onAction = {},
-            appBarState = SpeedDrawAppBarState()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewDraw() {
-    ScribbleDashTheme {
-        SpeedDrawScreen(
-            state = SpeedDrawState.Draw,
-            onAction = {},
-            appBarState = SpeedDrawAppBarState()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewResults() {
-    ScribbleDashTheme {
-        SpeedDrawScreen(
-            state = SpeedDrawState.Results(),
-            onAction = {},
-            appBarState = SpeedDrawAppBarState()
+            drawingsCount = 3
         )
     }
 }

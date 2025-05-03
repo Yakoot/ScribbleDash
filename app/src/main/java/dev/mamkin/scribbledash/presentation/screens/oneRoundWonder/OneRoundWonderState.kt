@@ -8,13 +8,14 @@ sealed interface OneRoundWonderState {
     data class Preview(
         val image: List<Path> = emptyList(),
         val secondsLeft: Int = 3,
-    ): OneRoundWonderState
-    data object Draw: OneRoundWonderState
+    ) : OneRoundWonderState
+
+    data object Draw : OneRoundWonderState
     data class Results(
         val percent: String = "0",
         val exampleImageData: List<Path> = emptyList(),
         val userImageData: List<Path> = emptyList(),
         val rating: Rating = Rating.OOPS,
-    ): OneRoundWonderState
+    ) : OneRoundWonderState
 }
 

@@ -14,20 +14,20 @@ sealed interface SpeedDrawState {
     data class Preview(
         val image: List<Path> = emptyList(),
         val secondsLeft: Int = 3,
-    ): SpeedDrawState
-    data object Draw: SpeedDrawState
+    ) : SpeedDrawState
+
+    data object Draw : SpeedDrawState
     data class Results(
         val averageScore: String = "0",
         val newHighScore: Boolean = false,
         val drawingsCompleted: Int = 0,
         val drawingsCountRecord: Boolean = false,
         val rating: Rating = Rating.OOPS,
-    ): SpeedDrawState
+    ) : SpeedDrawState
 }
 
 data class SpeedDrawAppBarState(
     val remainingTime: String = formatTime(SPEED_DRAW_TIME),
     val drawingsCompleted: Int = 0,
     val timerRed: Boolean = SPEED_DRAW_TIME <= 30,
-    val newHighScore: Boolean = false,
 )
