@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +30,6 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 fun PreviewView(
     modifier: Modifier = Modifier,
     image: List<Path>,
-    onSizeChanged: (Size) -> Unit,
     secondsLeft: Int
 ) {
     Column(
@@ -63,7 +61,6 @@ fun PreviewView(
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp),
                 paths = image,
-                onSizeChanged = onSizeChanged
             )
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -97,7 +94,6 @@ private fun Preview() {
         ) {
             PreviewView(
                 image = emptyList(),
-                onSizeChanged = {},
                 secondsLeft = 10
             )
         }

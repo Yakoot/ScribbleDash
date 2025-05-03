@@ -18,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -35,17 +37,22 @@ import dev.mamkin.scribbledash.ui.theme.BackgroundGradientStart
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @Destination<RootGraph>()
 @Composable
 fun StatisticsRoot(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    viewModel: StatisticsViewModel = koinViewModel()
 ) {
-    StatisticsRootScreen()
+    val state by viewModel.state.collectAsState()
+    StatisticsRootScreen(state = state)
 }
 
 @Composable
-fun StatisticsRootScreen() {
+fun StatisticsRootScreen(
+    state: StatisticsState
+) {
     val backgroundGradient = Brush.horizontalGradient(
         colors = listOf(
             BackgroundGradientStart,
@@ -87,7 +94,7 @@ fun StatisticsRootScreen() {
                         )
                     },
                     text = "Highest Speed Draw\naccuracy %",
-                    value = "0%"
+                    value = "${state.highestSpeedDrawScore}%"
                 )
                 StatisticsCard(
                     icon = {
@@ -98,7 +105,7 @@ fun StatisticsRootScreen() {
                     },
                     text = "Most Meh+ drawings\n" +
                             "in Speed Draw",
-                    value = "0"
+                    value = "${state.speedDrawCount}"
                 )
                 StatisticsCard(
                     icon = {
@@ -109,7 +116,7 @@ fun StatisticsRootScreen() {
                     },
                     text = "Highest Endless Mode\n" +
                             "accuracy %",
-                    value = "100%"
+                    value = "${state.highestEndlessModeScore}%"
                 )
                 StatisticsCard(
                     icon = {
@@ -120,7 +127,7 @@ fun StatisticsRootScreen() {
                     },
                     text = "Most drawings completed\n" +
                             "in Endless Mode",
-                    value = "0"
+                    value = "${state.endlessModeCount}"
                 )
             }
         }
@@ -165,11 +172,10 @@ fun StatisticsCard(
     }
 }
 
-
 @Preview
 @Composable
 private fun Preview() {
     ScribbleDashTheme {
-        StatisticsRootScreen()
+        StatisticsRootScreen(state = StatisticsState())
     }
 }

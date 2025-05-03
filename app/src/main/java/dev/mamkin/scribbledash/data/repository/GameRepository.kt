@@ -24,6 +24,11 @@ class GameRepository(private val applicationContext: Context) {
         return cachedImages?.random() ?: throw IllegalStateException("No images cached")
     }
 
+    fun getShuffledImages(): List<ImageData> {
+        loadAllImagesToCache()
+        return cachedImages?.shuffled() ?: throw IllegalStateException("No images cached")
+    }
+
     fun saveBitmapToFile(bitmap: Bitmap, fileName: String): String? {
         return try {
             val imagesDir = applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)

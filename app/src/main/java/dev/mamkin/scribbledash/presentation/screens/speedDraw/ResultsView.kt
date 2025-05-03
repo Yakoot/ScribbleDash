@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.ui.components.PaletteStat
+import dev.mamkin.scribbledash.ui.components.RatingText
 import dev.mamkin.scribbledash.ui.components.StarHighScore
 import dev.mamkin.scribbledash.ui.components.common.AppButton
-import dev.mamkin.scribbledash.ui.components.RatingText
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.labelXLarge
@@ -31,10 +31,7 @@ import dev.mamkin.scribbledash.ui.theme.labelXLarge
 @Composable
 fun SpeedDrawResults(
     modifier: Modifier = Modifier,
-    percent: String = "0",
-    newHighScore: Boolean = false,
-    newHightCounter: Boolean = false,
-    rating: Rating = Rating.OOPS,
+    state: SpeedDrawState.Results = SpeedDrawState.Results(),
     onDrawAgainClick: () -> Unit = {},
 ) {
     Column(
@@ -64,7 +61,7 @@ fun SpeedDrawResults(
                 ),
             contentAlignment = Alignment.TopCenter
         ) {
-            if (newHighScore) {
+            if (state.newHighScore) {
                 StarHighScore(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
@@ -87,17 +84,20 @@ fun SpeedDrawResults(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "$percent%",
+                        text = "${state.averageScore}%",
                         style = MaterialTheme.typography.displayLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-                RatingText(rating = rating)
+                RatingText(rating = state.rating)
                 Spacer(modifier = Modifier.height(16.dp))
-                PaletteStat(newHighScore = newHightCounter)
-                if (newHightCounter) Spacer(modifier = Modifier.height(20.dp))
+                PaletteStat(
+                    count = state.drawingsCompleted,
+                    newHighScore = state.drawingsCountRecord
+                )
+                if (!state.drawingsCountRecord) Spacer(modifier = Modifier.height(20.dp))
             }
         }
 
@@ -118,10 +118,12 @@ fun SpeedDrawResults(
 private fun Preview() {
     ScribbleDashTheme {
         SpeedDrawResults(
-            newHighScore = true,
-            newHightCounter = true,
-            rating = Rating.GOOD,
-            percent = "100"
+            state = SpeedDrawState.Results(
+                drawingsCountRecord = true,
+                newHighScore = true,
+                averageScore = "20",
+                rating = Rating.GREAT
+            )
         )
     }
 }

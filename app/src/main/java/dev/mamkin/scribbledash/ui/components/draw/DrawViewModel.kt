@@ -41,6 +41,19 @@ class DrawViewModel() : ViewModel(), KoinComponent {
         }
     }
 
+    fun clear() {
+        _state.update {
+            it.copy(
+                currentPath = null,
+                paths = emptyList(),
+                redoPaths = emptyList(),
+                isDoneEnabled = false,
+                isUndoEnabled = false,
+                isRedoEnabled = false
+            )
+        }
+    }
+
     fun getPaths(): List<Path> {
         return state.value.paths.createPaths()
     }

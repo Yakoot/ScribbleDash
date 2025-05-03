@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
@@ -16,6 +17,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.components.draw.DrawView
+import dev.mamkin.scribbledash.ui.components.draw.DrawViewModel
+import dev.mamkin.scribbledash.ui.components.draw.measureWithoutPadding
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
 import dev.mamkin.scribbledash.ui.components.game.PreviewView
 import dev.mamkin.scribbledash.ui.components.game.ResultsView
@@ -31,6 +34,11 @@ fun OneRoundWonderRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     OneRoundWonderScreen(
+        modifier = Modifier.measureWithoutPadding(
+            onSizeChanged = {
+                viewModel.onAction(OneRoundWonderAction.SizeChanged(it))
+            }
+        ),
         state = state,
         onAction = {
             when(it) {
@@ -48,11 +56,12 @@ fun OneRoundWonderRoot(
 
 @Composable
 fun OneRoundWonderScreen(
+    modifier: Modifier = Modifier,
     state: OneRoundWonderState,
     onAction: (OneRoundWonderAction) -> Unit,
 ) {
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) { innerPadding ->
         Column(
@@ -77,13 +86,13 @@ fun OneRoundWonderScreen(
                     PreviewView(
                         image = state.image,
                         secondsLeft = state.secondsLeft,
-                        onSizeChanged = {
-                            onAction(OneRoundWonderAction.SizeChanged(it))
-                        }
                     )
                 }
                 is OneRoundWonderState.Draw -> {
+                    val drawViewModel = viewModel<DrawViewModel>()
+                    drawViewModel.clear()
                     DrawView(
+                        viewModel = drawViewModel,
                         onDone = {
                             onAction(OneRoundWonderAction.ImageDrawn(it))
                         }

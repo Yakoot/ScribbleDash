@@ -29,6 +29,7 @@ import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.presentation.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.common.AppButton
+import dev.mamkin.scribbledash.ui.components.draw.measureWithoutPadding
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.OnSurface
@@ -95,9 +96,12 @@ fun ResultsView(
                             .padding(6.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp),
+                            .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp)
+                            .measureWithoutPadding(0.dp, {
+                                onImageSizeChanged(it)
+                            })
+                        ,
                         paths = exampleImageData,
-                        onSizeChanged = { onImageSizeChanged(it) }
                     )
                 }
             }

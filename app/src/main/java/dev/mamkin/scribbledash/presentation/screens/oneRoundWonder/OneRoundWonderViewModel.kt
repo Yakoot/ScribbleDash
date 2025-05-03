@@ -88,6 +88,9 @@ class OneRoundWonderViewModel(
 
     private fun onSizeChanged(size: Size) {
         canvasSize = size
+    }
+
+    private fun startGame() {
         val randomImage = imagesRepository.getRandomImage()
         val scaledImagePaths: List<Path> = randomImage.paths.scaleToNewSize(
             Size(
@@ -104,7 +107,7 @@ class OneRoundWonderViewModel(
 
     private fun onLevelSelected(level: DifficultyLevel) {
         difficultyLevel = level
-        _state.value = OneRoundWonderState.Preview()
+        startGame()
     }
 
     private fun startCountdown() = viewModelScope.launch {

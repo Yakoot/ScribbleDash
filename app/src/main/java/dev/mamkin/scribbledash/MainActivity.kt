@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
@@ -24,11 +28,14 @@ import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_statistics")
+
 class MainActivity : ComponentActivity() {
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

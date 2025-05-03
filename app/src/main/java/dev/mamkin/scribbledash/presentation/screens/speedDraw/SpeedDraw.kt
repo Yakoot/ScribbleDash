@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
@@ -22,6 +23,8 @@ import dev.mamkin.scribbledash.ui.components.Timer
 import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.components.draw.DrawView
+import dev.mamkin.scribbledash.ui.components.draw.DrawViewModel
+import dev.mamkin.scribbledash.ui.components.draw.measureWithoutPadding
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
 import dev.mamkin.scribbledash.ui.components.game.PreviewView
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
@@ -34,9 +37,16 @@ fun SpeedDrawRoot(
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val appBarState by viewModel.appBarState.collectAsStateWithLifecycle()
 
     SpeedDrawScreen(
+        modifier = Modifier.measureWithoutPadding(
+            onSizeChanged = {
+                viewModel.onAction(SpeedDrawAction.SizeChanged(it))
+            }
+        ),
         state = state,
+        appBarState = appBarState,
         onAction = {
             when (it) {
                 is SpeedDrawAction.Close -> {
@@ -54,11 +64,13 @@ fun SpeedDrawRoot(
 
 @Composable
 fun SpeedDrawScreen(
+    modifier: Modifier = Modifier,
     state: SpeedDrawState,
     onAction: (SpeedDrawAction) -> Unit,
+    appBarState: SpeedDrawAppBarState,
 ) {
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) { innerPadding ->
         Column(
@@ -83,12 +95,16 @@ fun SpeedDrawScreen(
                         Row {
                             Spacer(Modifier.width(10.dp))
                             Timer(
-                                text = "2:00"
+                                text = appBarState.remainingTime,
+                                isRed = appBarState.timerRed
                             )
                         }
                     },
                     title = {
-                        PaletteStat()
+                        PaletteStat(
+                            count = appBarState.drawingsCompleted,
+                            newHighScore = appBarState.newHighScore
+                        )
                     },
                     titleCentered = true
                 )
@@ -107,22 +123,23 @@ fun SpeedDrawScreen(
                     PreviewView(
                         image = state.image,
                         secondsLeft = state.secondsLeft,
-                        onSizeChanged = {
-                            onAction(SpeedDrawAction.SizeChanged(it))
-                        }
                     )
                 }
 
                 is SpeedDrawState.Draw -> {
+                    val drawViewModel = viewModel<DrawViewModel>()
                     DrawView(
-                        onDone = {}
+                        viewModel = drawViewModel,
+                        onDone = {
+                            onAction(SpeedDrawAction.ImageDrawn(it))
+                            drawViewModel.clear()
+                        }
                     )
                 }
 
                 is SpeedDrawState.Results -> {
                     SpeedDrawResults(
-                        percent = state.percent,
-                        rating = state.rating,
+                        state = state,
                         onDrawAgainClick = {
                             onAction(SpeedDrawAction.DrawAgain)
                         },
@@ -139,7 +156,8 @@ private fun PreviewDifficultyLevel() {
     ScribbleDashTheme {
         SpeedDrawScreen(
             state = SpeedDrawState.DifficultyLevel,
-            onAction = {}
+            onAction = {},
+            appBarState = SpeedDrawAppBarState()
         )
     }
 }
@@ -150,7 +168,8 @@ private fun PreviewPreview() {
     ScribbleDashTheme {
         SpeedDrawScreen(
             state = SpeedDrawState.Preview(),
-            onAction = {}
+            onAction = {},
+            appBarState = SpeedDrawAppBarState()
         )
     }
 }
@@ -160,8 +179,9 @@ private fun PreviewPreview() {
 private fun PreviewDraw() {
     ScribbleDashTheme {
         SpeedDrawScreen(
-            state = SpeedDrawState.Draw(),
-            onAction = {}
+            state = SpeedDrawState.Draw,
+            onAction = {},
+            appBarState = SpeedDrawAppBarState()
         )
     }
 }
@@ -172,7 +192,8 @@ private fun PreviewResults() {
     ScribbleDashTheme {
         SpeedDrawScreen(
             state = SpeedDrawState.Results(),
-            onAction = {}
+            onAction = {},
+            appBarState = SpeedDrawAppBarState()
         )
     }
 }

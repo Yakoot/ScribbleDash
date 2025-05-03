@@ -28,9 +28,9 @@ import dev.mamkin.scribbledash.ui.theme.OnSurface
 @Composable
 fun DrawView(
     modifier: Modifier = Modifier,
+    viewModel: DrawViewModel = viewModel(),
     onDone: (List<Path>) -> Unit,
 ) {
-    val viewModel = viewModel<DrawViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     Column(
         modifier = modifier
