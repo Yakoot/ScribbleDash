@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.util.fastForEach
-import dev.mamkin.scribbledash.presentation.models.PathData
 import dev.mamkin.scribbledash.presentation.utils.drawPath
 
 @Composable

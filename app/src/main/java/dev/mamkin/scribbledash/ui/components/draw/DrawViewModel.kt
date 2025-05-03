@@ -1,26 +1,20 @@
 package dev.mamkin.scribbledash.ui.components.draw
 
+import android.graphics.Path
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.mamkin.scribbledash.presentation.models.DrawState
-import dev.mamkin.scribbledash.presentation.models.PathData
-import kotlinx.coroutines.channels.Channel
+import dev.mamkin.scribbledash.presentation.utils.createPaths
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
 class DrawViewModel() : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
-
-    private val _events = Channel<UiEvent>(Channel.BUFFERED)
-    val events = _events.receiveAsFlow()
 
     private val _state = MutableStateFlow(DrawState())
     val state = _state
@@ -38,13 +32,17 @@ class DrawViewModel() : ViewModel(), KoinComponent {
 
     fun onAction(action: DrawAction) {
         when (action) {
-            DrawAction.OnDoneClick -> onDoneClick()
             is DrawAction.OnDraw -> onDraw(action.offset)
             is DrawAction.OnNewPathStart -> onNewPathStart(action.offset)
             DrawAction.OnPathEnd -> onPathEnd()
             DrawAction.OnRedo -> onRedo()
             DrawAction.OnUndo -> onUndo()
+            else -> Unit
         }
+    }
+
+    fun getPaths(): List<Path> {
+        return state.value.paths.createPaths()
     }
 
     private fun onPathEnd() {
@@ -83,13 +81,6 @@ class DrawViewModel() : ViewModel(), KoinComponent {
         }
     }
 
-    private fun onDoneClick() {
-        val paths = _state.value.paths
-        viewModelScope.launch {
-            _events.send(UiEvent.NavigateToResults)
-        }
-    }
-
     private fun onUndo() {
         val paths = state.value.paths
         if (paths.isEmpty()) return
@@ -123,8 +114,4 @@ class DrawViewModel() : ViewModel(), KoinComponent {
             )
         }
     }
-}
-
-sealed interface UiEvent {
-    data object NavigateToResults : UiEvent
 }

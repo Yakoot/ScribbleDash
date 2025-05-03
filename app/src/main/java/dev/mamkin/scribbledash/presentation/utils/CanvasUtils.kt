@@ -1,7 +1,6 @@
 package dev.mamkin.scribbledash.presentation.utils
 
 import android.graphics.Matrix
-import android.graphics.PathMeasure
 import android.graphics.RectF
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -14,7 +13,7 @@ import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.mamkin.scribbledash.presentation.models.PathData
+import dev.mamkin.scribbledash.ui.components.draw.PathData
 import kotlin.math.abs
 import kotlin.math.min
 import android.graphics.Path as AndroidPath
@@ -112,22 +111,6 @@ fun List<AndroidPath>.moveToTopLeftCorner(
         }
     }
 }
-
-
-fun AndroidPath.length(): Float {
-    val measure = PathMeasure(this, false)
-    var lengthSum = 0f
-
-    lengthSum += measure.length
-
-    while (measure.nextContour()) {
-        lengthSum += measure.length
-    }
-    return lengthSum
-}
-
-fun List<AndroidPath>.totalLength(): Float =
-    this.fold(0f) { acc, path -> acc + path.length() }
 
 fun List<AndroidPath>.scaleToNewSize(
     fromSize: Size,

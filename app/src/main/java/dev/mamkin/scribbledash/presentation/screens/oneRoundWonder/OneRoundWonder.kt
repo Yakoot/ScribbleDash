@@ -15,8 +15,8 @@ import com.ramcosta.composedestinations.generated.destinations.HomeRootDestinati
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
+import dev.mamkin.scribbledash.ui.components.draw.DrawView
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
-import dev.mamkin.scribbledash.ui.components.game.DrawView
 import dev.mamkin.scribbledash.ui.components.game.PreviewView
 import dev.mamkin.scribbledash.ui.components.game.ResultsView
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
@@ -84,9 +84,8 @@ fun OneRoundWonderScreen(
                 }
                 is OneRoundWonderState.Draw -> {
                     DrawView(
-                        state = state.drawState,
-                        onAction = {
-                            onAction(OneRoundWonderAction.Draw(it))
+                        onDone = {
+                            onAction(OneRoundWonderAction.ImageDrawn(it))
                         }
                     )
                 }

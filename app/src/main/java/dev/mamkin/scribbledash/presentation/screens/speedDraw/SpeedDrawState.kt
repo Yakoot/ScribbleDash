@@ -2,7 +2,7 @@ package dev.mamkin.scribbledash.presentation.screens.speedDraw
 
 import android.graphics.Path
 import dev.mamkin.scribbledash.domain.Rating
-import dev.mamkin.scribbledash.presentation.models.DrawState
+import dev.mamkin.scribbledash.ui.components.draw.DrawState
 
 
 sealed interface SpeedDrawState {

@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.presentation.models
+package dev.mamkin.scribbledash.ui.components.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color

@@ -1,4 +1,4 @@
-package dev.mamkin.scribbledash.ui.components.draw
+package dev.mamkin.scribbledash.ui.components
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer

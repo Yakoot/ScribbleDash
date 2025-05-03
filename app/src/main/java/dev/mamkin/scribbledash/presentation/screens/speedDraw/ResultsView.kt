@@ -23,7 +23,7 @@ import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.ui.components.PaletteStat
 import dev.mamkin.scribbledash.ui.components.StarHighScore
 import dev.mamkin.scribbledash.ui.components.common.AppButton
-import dev.mamkin.scribbledash.ui.components.draw.RatingText
+import dev.mamkin.scribbledash.ui.components.RatingText
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.labelXLarge

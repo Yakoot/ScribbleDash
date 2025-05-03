@@ -21,8 +21,8 @@ import dev.mamkin.scribbledash.ui.components.PaletteStat
 import dev.mamkin.scribbledash.ui.components.Timer
 import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
+import dev.mamkin.scribbledash.ui.components.draw.DrawView
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
-import dev.mamkin.scribbledash.ui.components.game.DrawView
 import dev.mamkin.scribbledash.ui.components.game.PreviewView
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import org.koin.androidx.compose.koinViewModel
@@ -115,10 +115,7 @@ fun SpeedDrawScreen(
 
                 is SpeedDrawState.Draw -> {
                     DrawView(
-                        state = state.drawState,
-                        onAction = {
-                            onAction(SpeedDrawAction.Draw(it))
-                        }
+                        onDone = {}
                     )
                 }
 

@@ -1,5 +1,6 @@
-package dev.mamkin.scribbledash.ui.components.game
+package dev.mamkin.scribbledash.ui.components.draw
 
+import android.graphics.Path
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,24 +14,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import dev.mamkin.scribbledash.presentation.models.DrawState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.mamkin.scribbledash.presentation.utils.drawGrid
-import dev.mamkin.scribbledash.ui.components.draw.DrawAction
-import dev.mamkin.scribbledash.ui.components.draw.DrawingCanvas
-import dev.mamkin.scribbledash.ui.components.draw.DrawingControls
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
 
 @Composable
 fun DrawView(
     modifier: Modifier = Modifier,
-    state: DrawState,
-    onAction: (DrawAction) -> Unit
+    onDone: (List<Path>) -> Unit,
 ) {
+    val viewModel = viewModel<DrawViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -61,7 +62,7 @@ fun DrawView(
                     .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp),
                 paths = state.paths,
                 currentPath = state.currentPath,
-                onAction = onAction
+                onAction = viewModel::onAction
             )
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -71,7 +72,12 @@ fun DrawView(
             color = OnSurface
         )
         Spacer(modifier = Modifier.weight(1f))
-        DrawingControls(onAction = onAction, state = state)
+        DrawingControls(onAction = {
+            when (it) {
+                is DrawAction.OnDoneClick -> onDone(viewModel.getPaths())
+                else -> viewModel.onAction(it)
+            }
+        }, state = state)
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
