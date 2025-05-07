@@ -87,13 +87,13 @@ val Typography = Typography(
     labelLarge = TextStyle(
         fontFamily = OutfitFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp,
-        lineHeight = 28.sp
+        fontSize = 20.sp,
+        lineHeight = 24.sp
     ),
     labelMedium = TextStyle(
         fontFamily = OutfitFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         lineHeight = 24.sp
     ),
     labelSmall = TextStyle(
@@ -103,3 +103,19 @@ val Typography = Typography(
         lineHeight = 18.sp
     )
 )
+
+val Typography.headlineXSmall: TextStyle
+    get() = TextStyle(
+        fontFamily = BagelFatOneFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 18.sp
+    )
+
+val Typography.labelXLarge: TextStyle
+    get() = TextStyle(
+        fontFamily = OutfitFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 28.sp
+    )

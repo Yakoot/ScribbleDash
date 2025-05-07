@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,11 +31,14 @@ import dev.mamkin.scribbledash.ui.theme.SurfaceHigh
 @Composable
 fun GameModeCard(
     modifier: Modifier = Modifier,
+    borderColor: Color = Success,
+    image: Int = R.drawable.one_round_wonder,
+    text: String = "One Round\nWonder",
     onClick: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Success
+            containerColor = borderColor
         ),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(
@@ -54,7 +59,7 @@ fun GameModeCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "One Round\nWonder",
+                text = text,
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -63,9 +68,11 @@ fun GameModeCard(
             )
 
             Image(
-                painter = painterResource(id = R.drawable.one_round_wonder),
-                contentDescription = "One Round Wonder",
-                modifier = Modifier.weight(1f)
+                painter = painterResource(id = image),
+                contentDescription = text,
+                modifier = Modifier
+                    .weight(1f)
+                    .offset(x = 12.dp)
             )
         }
     }

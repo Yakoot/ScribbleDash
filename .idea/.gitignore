@@ -1,4 +1,6 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+/appInsightsSettings.xml
+/studiobot.xml
 /inspectionProfiles/Project_Default.xml

@@ -1,6 +1,7 @@
 package dev.mamkin.scribbledash.presentation.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -21,14 +22,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.navgraphs.OneRoundWonderNavGraph
+import com.ramcosta.composedestinations.generated.destinations.EndlessModeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.OneRoundWonderRootDestination
+import com.ramcosta.composedestinations.generated.destinations.SpeedDrawRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import dev.mamkin.scribbledash.ui.components.AppTopBar
+import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientEnd
 import dev.mamkin.scribbledash.ui.theme.BackgroundGradientStart
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackgroundVariant
+import dev.mamkin.scribbledash.ui.theme.Primary
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import dev.mamkin.scribbledash.ui.theme.Success
+import dev.mamkin.scribbledash.ui.theme.TertiaryContainer
 
 @Destination<RootGraph>(
     start = true
@@ -38,15 +45,19 @@ fun HomeRoot(
     navigator: DestinationsNavigator
 ) {
     HomeScreen(
-        onOneRoundWonderClick = {
-            navigator.navigate(OneRoundWonderNavGraph)
+        onGameModeClick = {
+            when (it) {
+                GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderRootDestination)
+                GameMode.SpeedDraw -> navigator.navigate(SpeedDrawRootDestination)
+                GameMode.EndlessMode -> navigator.navigate(EndlessModeRootDestination)
+            }
         }
     )
 }
 
 @Composable
 fun HomeScreen(
-    onOneRoundWonderClick: () -> Unit,
+    onGameModeClick: (GameMode) -> Unit,
 ) {
     val backgroundGradient = Brush.horizontalGradient(
         colors = listOf(
@@ -94,7 +105,12 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 GameModeCards(
-                    onOneRoundWonderClick = onOneRoundWonderClick
+                    onClick = onGameModeClick,
+                    gameModes = listOf(
+                        GameMode.OneRoundWonder,
+                        GameMode.SpeedDraw,
+                        GameMode.EndlessMode
+                    )
                 )
             }
         }
@@ -107,12 +123,21 @@ fun HomeScreen(
 @Composable
 private fun GameModeCards(
     modifier: Modifier = Modifier,
-    onOneRoundWonderClick: () -> Unit
+    gameModes: List<GameMode> = emptyList(),
+    onClick: (GameMode) -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        GameModeCard(onClick = onOneRoundWonderClick)
+        gameModes.forEach { gameMode ->
+            GameModeCard(
+                onClick = { onClick(gameMode) },
+                text = gameMode.text,
+                borderColor = gameMode.borderColor,
+                image = gameMode.image
+            )
+        }
     }
 }
 
@@ -121,7 +146,31 @@ private fun GameModeCards(
 private fun Preview() {
     ScribbleDashTheme {
         HomeScreen(
-            onOneRoundWonderClick = {}
+            onGameModeClick = {},
         )
     }
+}
+
+sealed class GameMode(
+    val image: Int,
+    val text: String,
+    val borderColor: Color
+) {
+    object OneRoundWonder : GameMode(
+        image = R.drawable.one_round_wonder,
+        text = "One Round\nWonder",
+        borderColor = Success
+    )
+
+    object SpeedDraw : GameMode(
+        image = R.drawable.speed_draw,
+        text = "Speed\nDraw",
+        borderColor = Primary
+    )
+
+    object EndlessMode : GameMode(
+        image = R.drawable.endless_mode,
+        text = "Endless\nMode",
+        borderColor = TertiaryContainer
+    )
 }
