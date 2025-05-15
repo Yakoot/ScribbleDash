@@ -69,7 +69,6 @@ fun DrawingsCount(
                     .align(Alignment.CenterEnd)
                     .clip(CircleShape)
                     .background(backgroundColor),
-                contentAlignment = Alignment.Center
             ) {
                 Text(
                     modifier = Modifier.padding(start = 10.dp),

@@ -31,12 +31,6 @@ import org.koin.core.context.startKoin
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_statistics")
 
 class MainActivity : ComponentActivity() {
-
-    companion object {
-        private const val PERMISSION_REQUEST_CODE = 100
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

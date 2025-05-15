@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.di
 
+import CoinsRepository
 import StatisticsRepository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -23,11 +24,12 @@ val appModule = module {
 
     // Repositories
     single { ImagesRepository(androidContext()) }
-    singleOf(::StatisticsRepository) // Эквивалентно single { StatisticsRepository(get()) }
+    singleOf(::StatisticsRepository)
+    singleOf(::CoinsRepository)
 
     // ViewModels
-    viewModel { SpeedDrawViewModel(get(), get()) } // Добавляем StatisticsRepository
-    viewModel { EndlessModeViewModel(get(), get()) } // Добавляем StatisticsRepository
+    viewModel { SpeedDrawViewModel(get(), get()) }
+    viewModel { EndlessModeViewModel(get(), get()) }
     viewModel { OneRoundWonderViewModel(get()) }
-    viewModel { StatisticsViewModel(get()) } // Регистрируем ViewModel
+    viewModel { StatisticsViewModel(get()) }
 }
