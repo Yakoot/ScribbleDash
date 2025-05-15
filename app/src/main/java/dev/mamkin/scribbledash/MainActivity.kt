@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.ShopRootDestination
 import com.ramcosta.composedestinations.generated.destinations.StatisticsRootDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
@@ -49,7 +50,8 @@ class MainActivity : ComponentActivity() {
                 val isBottomBarVisible = remember(currentDestination) {
                     listOf(
                         StatisticsRootDestination.route,
-                        HomeRootDestination.route
+                        HomeRootDestination.route,
+                        ShopRootDestination.route
                     ).contains(currentDestination.route)
                 }
 
