@@ -32,3 +32,47 @@ val RainbowPenBrush = Brush.linearGradient(
         Color(0xFFFF0000), // Red
     )
 )
+
+val rainbow = listOf(
+    Color(0xFFFB02FB), // Magenta
+    Color(0xFF0000FF), // Blue
+    Color(0xFF00EEFF), // Cyan
+    Color(0xFF008000), // Green
+    Color(0xFFFFFF00), // Yellow
+    Color(0xFFFFA500), // Orange
+    Color(0xFFFF0000), // Red
+)
+
+sealed class PenColor {
+    data class SolidColor(val color: Color) : PenColor()
+    data class Gradient(val colors: List<Color>) : PenColor()
+}
+
+enum class PenTier(val price: Int) {
+    BASIC(20),
+    PREMIUM(120),
+    LEGENDARY(999)
+}
+
+data class PenAsset(
+    val id: Int,
+    val color: PenColor,
+    val tier: PenTier,
+)
+
+val penAssets = listOf(
+    PenAsset(id = 0, color = PenColor.SolidColor(MidnightBlack), tier = PenTier.BASIC),
+    PenAsset(id = 1, color = PenColor.SolidColor(CrimsonRed), tier = PenTier.BASIC),
+    PenAsset(id = 2, color = PenColor.SolidColor(SunshineYellow), tier = PenTier.BASIC),
+    PenAsset(id = 3, color = PenColor.SolidColor(OceanBlue), tier = PenTier.BASIC),
+    PenAsset(id = 4, color = PenColor.SolidColor(EmeraldGreen), tier = PenTier.BASIC),
+    PenAsset(id = 5, color = PenColor.SolidColor(FlameOrange), tier = PenTier.BASIC),
+    PenAsset(id = 6, color = PenColor.SolidColor(RoseQuartz), tier = PenTier.PREMIUM),
+    PenAsset(id = 7, color = PenColor.SolidColor(RoyalPurple), tier = PenTier.PREMIUM),
+    PenAsset(id = 8, color = PenColor.SolidColor(TealDream), tier = PenTier.PREMIUM),
+    PenAsset(id = 9, color = PenColor.SolidColor(GoldenGlow), tier = PenTier.PREMIUM),
+    PenAsset(id = 10, color = PenColor.SolidColor(CoralReef), tier = PenTier.PREMIUM),
+    PenAsset(id = 11, color = PenColor.SolidColor(MajesticIndigo), tier = PenTier.PREMIUM),
+    PenAsset(id = 12, color = PenColor.SolidColor(CopperAura), tier = PenTier.PREMIUM),
+    PenAsset(id = 13, color = PenColor.Gradient(rainbow), tier = PenTier.LEGENDARY),
+)

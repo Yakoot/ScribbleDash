@@ -18,20 +18,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.mamkin.scribbledash.presentation.utils.drawGrid
+import dev.mamkin.scribbledash.ui.theme.CanvasBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
+import dev.mamkin.scribbledash.ui.theme.PenColor
+import org.koin.androidx.compose.koinViewModel
+
 
 @Composable
 fun DrawView(
     modifier: Modifier = Modifier,
-    viewModel: DrawViewModel = viewModel(),
+    viewModel: DrawViewModel = koinViewModel(),
     onDone: (List<Path>) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val selectedPenColor by viewModel.selectedPenColor.collectAsStateWithLifecycle()
+    val selectedCanvasBackground by viewModel.selectedCanvasBackground.collectAsStateWithLifecycle()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -58,11 +66,12 @@ fun DrawView(
                     .fillMaxSize()
                     .padding(12.dp)
                     .clip(RoundedCornerShape(24.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    .drawCanvasBackground(selectedCanvasBackground)
                     .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 24.dp),
                 paths = state.paths,
                 currentPath = state.currentPath,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                penColor = selectedPenColor,
             )
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -80,4 +89,15 @@ fun DrawView(
         }, state = state)
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
+
+@Composable
+fun Modifier.drawCanvasBackground(backgroundAsset: CanvasBackground?): Modifier = when (val bg = backgroundAsset) {
+    is CanvasBackground.SolidColor -> background(bg.color)
+    is CanvasBackground.Texture -> paint(
+        painter = painterResource(bg.resourceId),
+        contentScale = ContentScale.Crop
+    )
+
+    null -> this
 }

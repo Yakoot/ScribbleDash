@@ -1,7 +1,7 @@
 package dev.mamkin.scribbledash.ui.theme
 
-import androidx.compose.ui.graphics.Color
 import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.Color
 import dev.mamkin.scribbledash.R
 
 // Basic colors
@@ -23,7 +23,7 @@ val PaleMint = Color(0xFFD9EDE1)
 val SoftLilac = Color(0xFFE2D3E8)
 
 // Legendary textures
-val PaperlikeFeelResId = R.drawable.bg_wood_texture
+val PaperlikeFeelResId = R.drawable.bg_paperlike_feel
 val WoodTextureResId = R.drawable.bg_wood_texture
 val VintageNotebookResId = R.drawable.bg_vintage_notebook
 
@@ -32,49 +32,34 @@ sealed class CanvasBackground {
     data class Texture(@DrawableRes val resourceId: Int) : CanvasBackground()
 }
 
-enum class BackgroundTier {
-    BASIC,
-    PREMIUM,
-    LEGENDARY
+enum class BackgroundTier(val price: Int) {
+    BASIC(80),
+    PREMIUM(150),
+    LEGENDARY(250)
 }
 
 data class CanvasBackgroundAsset(
-    val id: String, 
-    val displayName: String, 
+    val id: Int,
     val background: CanvasBackground,
     val tier: BackgroundTier,
-    val isDefault: Boolean = false 
 )
 
-val allCanvasBackgrounds: List<CanvasBackgroundAsset> = listOf(
-    // Basic colors
-    CanvasBackgroundAsset("basic_white", "White", CanvasBackground.SolidColor(White), BackgroundTier.BASIC, isDefault = true),
-    CanvasBackgroundAsset("basic_light_gray", "Light Gray", CanvasBackground.SolidColor(LightGray), BackgroundTier.BASIC),
-    CanvasBackgroundAsset("basic_pale_beige", "Pale Beige", CanvasBackground.SolidColor(PaleBeige), BackgroundTier.BASIC),
-    CanvasBackgroundAsset("basic_soft_powder_blue", "Soft Powder Blue", CanvasBackground.SolidColor(SoftPowderBlue), BackgroundTier.BASIC),
-    CanvasBackgroundAsset("basic_light_sage_green", "Light Sage Green", CanvasBackground.SolidColor(LightSageGreen), BackgroundTier.BASIC),
-    CanvasBackgroundAsset("basic_pale_peach", "Pale Peach", CanvasBackground.SolidColor(PalePeach), BackgroundTier.BASIC),
-    CanvasBackgroundAsset("basic_soft_lavender", "Soft Lavender", CanvasBackground.SolidColor(SoftLavender), BackgroundTier.BASIC),
-
-    // Premium colors
-    CanvasBackgroundAsset("premium_faded_olive", "Faded Olive", CanvasBackground.SolidColor(FadedOlive), BackgroundTier.PREMIUM),
-    CanvasBackgroundAsset("premium_muted_mauve", "Muted Mauve", CanvasBackground.SolidColor(MutedMauve), BackgroundTier.PREMIUM),
-    CanvasBackgroundAsset("premium_dusty_blue", "Dusty Blue", CanvasBackground.SolidColor(DustyBlue), BackgroundTier.PREMIUM),
-    CanvasBackgroundAsset("premium_soft_khaki", "Soft Khaki", CanvasBackground.SolidColor(SoftKhaki), BackgroundTier.PREMIUM),
-    CanvasBackgroundAsset("premium_muted_coral", "Muted Coral", CanvasBackground.SolidColor(MutedCoral), BackgroundTier.PREMIUM),
-    CanvasBackgroundAsset("premium_pale_mint", "Pale Mint", CanvasBackground.SolidColor(PaleMint), BackgroundTier.PREMIUM),
-    CanvasBackgroundAsset("premium_soft_lilac", "Soft Lilac", CanvasBackground.SolidColor(SoftLilac), BackgroundTier.PREMIUM),
-
-    // Legendary textures
-    CanvasBackgroundAsset("legendary_paperlike", "Paperlike Feel", CanvasBackground.Texture(PaperlikeFeelResId), BackgroundTier.LEGENDARY),
-    CanvasBackgroundAsset("legendary_wood", "Wood Texture", CanvasBackground.Texture(WoodTextureResId), BackgroundTier.LEGENDARY),
-    CanvasBackgroundAsset("legendary_vintage_notebook", "Vintage Notebook", CanvasBackground.Texture(VintageNotebookResId), BackgroundTier.LEGENDARY)
+val canvasBackgroundAssets = listOf<CanvasBackgroundAsset>(
+    CanvasBackgroundAsset(id = 0, background = CanvasBackground.SolidColor(White), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 1, background = CanvasBackground.SolidColor(LightGray), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 2, background = CanvasBackground.SolidColor(PaleBeige), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 3, background = CanvasBackground.SolidColor(SoftPowderBlue), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 4, background = CanvasBackground.SolidColor(LightSageGreen), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 5, background = CanvasBackground.SolidColor(PalePeach), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 6, background = CanvasBackground.SolidColor(SoftLavender), tier = BackgroundTier.BASIC),
+    CanvasBackgroundAsset(id = 7, background = CanvasBackground.SolidColor(FadedOlive), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 8, background = CanvasBackground.SolidColor(MutedMauve), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 9, background = CanvasBackground.SolidColor(DustyBlue), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 10, background = CanvasBackground.SolidColor(SoftKhaki), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 11, background = CanvasBackground.SolidColor(MutedCoral), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 12, background = CanvasBackground.SolidColor(PaleMint), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 13, background = CanvasBackground.SolidColor(SoftLilac), tier = BackgroundTier.PREMIUM),
+    CanvasBackgroundAsset(id = 14, background = CanvasBackground.Texture(PaperlikeFeelResId), tier = BackgroundTier.LEGENDARY),
+    CanvasBackgroundAsset(id = 15, background = CanvasBackground.Texture(WoodTextureResId), tier = BackgroundTier.LEGENDARY),
+    CanvasBackgroundAsset(id = 16, background = CanvasBackground.Texture(VintageNotebookResId), tier = BackgroundTier.LEGENDARY),
 )
-
-fun getCanvasBackgroundAssetById(id: String): CanvasBackgroundAsset? {
-    return allCanvasBackgrounds.find { it.id == id }
-}
-
-fun getDefaultCanvasBackgroundAsset(): CanvasBackgroundAsset {
-    return allCanvasBackgrounds.first { it.isDefault }
-}

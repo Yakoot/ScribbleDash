@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.util.fastForEach
 import dev.mamkin.scribbledash.presentation.utils.drawPath
+import dev.mamkin.scribbledash.ui.theme.PenColor
 
 @Composable
 fun DrawingCanvas(
@@ -14,6 +15,7 @@ fun DrawingCanvas(
     modifier: Modifier = Modifier,
     currentPath: PathData? = null,
     onAction: (DrawAction) -> Unit,
+    penColor: PenColor?,
 ) {
     Canvas(
         modifier = modifier
@@ -37,13 +39,13 @@ fun DrawingCanvas(
         paths.fastForEach { pathData ->
             drawPath(
                 path = pathData.path,
-                color = pathData.color,
+                penColor = penColor,
             )
         }
         currentPath?.let {
             drawPath(
                 path = it.path,
-                color = it.color
+                penColor = penColor
             )
         }
     }

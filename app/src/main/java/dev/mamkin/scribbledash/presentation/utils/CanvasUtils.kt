@@ -4,13 +4,11 @@ import android.graphics.Matrix
 import android.graphics.RectF
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.mamkin.scribbledash.ui.components.draw.PathData
@@ -53,12 +51,12 @@ fun Modifier.drawGrid(
 
     val cornerRadius = radius.toPx()
 
-    drawRoundRect(
-        color = color,
-        size = size,
-        cornerRadius = CornerRadius(cornerRadius, cornerRadius),
-        style = Stroke(width = 2.dp.toPx())
-    )
+//    drawRoundRect(
+//        color = color,
+//        size = size,
+//        cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+//        style = Stroke(width = 2.dp.toPx())
+//    )
 
     val thirdWidth = canvasWidth / 3
     val thirdHeight = canvasHeight / 3

@@ -1,6 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.home
 
-import CoinsRepository
+import ShopRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,15 +51,15 @@ import org.koin.compose.koinInject
 fun HomeRoot(
     navigator: DestinationsNavigator
 ) {
-    val coinsRepository: CoinsRepository = koinInject<CoinsRepository>()
-    val coins: Int by coinsRepository.coinsCount.collectAsStateWithLifecycle(initialValue = 0)
+    val shopRepository: ShopRepository = koinInject<ShopRepository>()
+    val coins: Int by shopRepository.coinsCount.collectAsStateWithLifecycle(initialValue = 0)
 
     val coroutineScope = rememberCoroutineScope()
 
     HomeScreen(
         onGameModeClick = {
             coroutineScope.launch {
-                coinsRepository.addCoins(300)
+                shopRepository.addCoins(300)
             }
             when (it) {
                 GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderRootDestination)
