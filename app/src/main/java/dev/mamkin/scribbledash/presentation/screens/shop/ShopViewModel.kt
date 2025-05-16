@@ -27,6 +27,11 @@ class ShopViewModel : ViewModel() {
 
     fun onAction(action: ShopAction) {
         when (action) {
+            is ShopAction.SelectTab -> {
+                _state.value = _state.value.copy(
+                    tab = action.tab
+                )
+            }
             else -> TODO("Handle actions")
         }
     }
