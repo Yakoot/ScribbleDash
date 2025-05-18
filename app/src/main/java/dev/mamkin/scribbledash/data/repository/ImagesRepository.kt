@@ -67,7 +67,7 @@ class ImagesRepository(private val applicationContext: Context) {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun getImageData(idRes: Int): ImageData {
+    fun getImageData(idRes: Int): ImageData {
         // Используем applicationContext для доступа к ресурсам
         val parser = applicationContext.resources.getXml(idRes)
         var eventType = parser.eventType

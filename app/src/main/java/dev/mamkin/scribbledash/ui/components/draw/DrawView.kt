@@ -27,7 +27,6 @@ import dev.mamkin.scribbledash.presentation.utils.drawGrid
 import dev.mamkin.scribbledash.ui.theme.CanvasBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
-import dev.mamkin.scribbledash.ui.theme.PenColor
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -83,7 +82,10 @@ fun DrawView(
         Spacer(modifier = Modifier.weight(1f))
         DrawingControls(onAction = {
             when (it) {
-                is DrawAction.OnDoneClick -> onDone(viewModel.getPaths())
+                is DrawAction.OnDoneClick -> {
+                    onDone(viewModel.getPaths())
+                    viewModel.clear()
+                }
                 else -> viewModel.onAction(it)
             }
         }, state = state)

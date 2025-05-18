@@ -9,9 +9,10 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.EXAMPLE_STROKE_WIDTH
 import dev.mamkin.scribbledash.presentation.utils.drawPathsToBitmap
 import dev.mamkin.scribbledash.ui.components.draw.USER_STROKE_WIDTH
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-suspend fun calculateResults(
+fun calculateResults(
     exampleImagePaths: List<Path>,
     userImagePaths: List<Path>,
     canvasSize: Size,
@@ -117,3 +118,15 @@ data class DrawingResult(
     val rating: Rating,
     val score: Int
 )
+
+fun Rating.getCoinsResult(difficultyLevel: DifficultyLevel): Int {
+    val muliplier = difficultyLevel.coinsMultiplier
+    val coinsByRating = when(this) {
+        Rating.OOPS -> 1
+        Rating.MEH -> 2
+        Rating.GOOD -> 2
+        Rating.GREAT -> 4
+        Rating.WOOHOO -> 6
+    }
+    return ceil(coinsByRating * muliplier).toInt()
+}

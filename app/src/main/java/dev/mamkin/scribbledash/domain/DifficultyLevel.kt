@@ -1,7 +1,7 @@
 package dev.mamkin.scribbledash.domain
 
-enum class DifficultyLevel(val multiplier: Int) {
-    Beginner(15),
-    Challenging(7),
-    Master(4)
+enum class DifficultyLevel(val multiplier: Int, val coinsMultiplier: Float) {
+    Beginner(15, 0.5f),
+    Challenging(7, 1f),
+    Master(4, 1.75f)
 }

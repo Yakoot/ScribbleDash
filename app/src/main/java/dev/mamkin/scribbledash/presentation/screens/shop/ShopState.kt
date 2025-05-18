@@ -11,7 +11,3 @@ enum class ShopTab(val title: String) {
     PEN("Pen"),
     CANVAS("Canvas")
 }
-
-sealed interface ShopItem {
-
-}

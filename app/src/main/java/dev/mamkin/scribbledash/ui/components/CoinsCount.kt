@@ -30,9 +30,8 @@ fun CoinsCount(
     Box(
         modifier = modifier
             .padding(start = 16.dp)
-            .wrapContentWidth() // ширина по содержимому
+            .wrapContentWidth()
     ) {
-        // Сам контейнер с текстом, отступ слева равен половине монетки
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceContainerLow, CircleShape)

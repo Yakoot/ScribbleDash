@@ -8,6 +8,7 @@ import dev.mamkin.scribbledash.data.repository.ImagesRepository
 import dev.mamkin.scribbledash.dataStore
 import dev.mamkin.scribbledash.presentation.screens.endlessMode.EndlessModeViewModel
 import dev.mamkin.scribbledash.presentation.screens.oneRoundWonder.OneRoundWonderViewModel
+import dev.mamkin.scribbledash.presentation.screens.shop.ShopViewModel
 import dev.mamkin.scribbledash.presentation.screens.speedDraw.SpeedDrawViewModel
 import dev.mamkin.scribbledash.presentation.screens.statistics.StatisticsViewModel
 import dev.mamkin.scribbledash.ui.components.draw.DrawViewModel
@@ -30,9 +31,10 @@ val appModule = module {
     singleOf(::ShopRepository)
 
     // ViewModels
-    viewModel { SpeedDrawViewModel(get(), get()) }
-    viewModel { EndlessModeViewModel(get(), get()) }
-    viewModel { OneRoundWonderViewModel(get()) }
+    viewModel { SpeedDrawViewModel(get(), get(), get()) }
+    viewModel { EndlessModeViewModel(get(), get(), get()) }
+    viewModel { OneRoundWonderViewModel(get(), get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModelOf(::DrawViewModel)
+    viewModelOf(::ShopViewModel)
 }

@@ -5,15 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,12 +34,6 @@ fun DrawingsCount(
         R.drawable.palette
     }
 
-    val width = if (newHighScore) {
-        80.dp
-    } else {
-        76.dp
-    }
-
     val backgroundColor = if (newHighScore) {
         Pink
     } else {
@@ -58,30 +52,33 @@ fun DrawingsCount(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier
-                .width(width),
-            contentAlignment = Alignment.CenterEnd,
+            modifier = modifier
+                .padding(start = 20.dp)
+                .wrapContentWidth()
         ) {
             Box(
                 modifier = Modifier
-                    .width(60.dp)
+                    .background(backgroundColor, CircleShape)
+                    .wrapContentWidth()
                     .height(28.dp)
-                    .align(Alignment.CenterEnd)
-                    .clip(CircleShape)
-                    .background(backgroundColor),
+                    .align(Alignment.CenterStart),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    modifier = Modifier.padding(start = 10.dp),
+                    modifier = Modifier
+                        .padding(start = 32.dp, end = 20.dp),
                     text = count.toString(),
                     style = MaterialTheme.typography.headlineXSmall,
                     color = textColor
                 )
             }
+
             Image(
                 painter = painterResource(id = image),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
+                    .offset(x = (-20).dp)
             )
         }
 

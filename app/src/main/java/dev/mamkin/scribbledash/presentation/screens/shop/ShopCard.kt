@@ -1,7 +1,9 @@
 package dev.mamkin.scribbledash.presentation.screens.shop
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,21 +21,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.mamkin.scribbledash.R
+import dev.mamkin.scribbledash.ui.components.draw.drawCanvasBackground
 import dev.mamkin.scribbledash.ui.theme.CanvasBackground
-import dev.mamkin.scribbledash.ui.theme.CanvasBackgroundAsset
-import dev.mamkin.scribbledash.ui.theme.PenAsset
 import dev.mamkin.scribbledash.ui.theme.PenColor
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
+import dev.mamkin.scribbledash.ui.theme.Success
 
 @Composable
 fun ShopCard(
     modifier: Modifier = Modifier,
-    state: ShopItemState
+    state: ShopItemState,
+    onClick: () -> Unit = {}
 ) {
     val containerColor = when (state.grade) {
         ShopItemGrade.BASIC -> Color.White
@@ -63,12 +71,16 @@ fun ShopCard(
         ShopItemGrade.PREMIUM -> "PREMIUM"
         ShopItemGrade.LEGENDARY -> "LEGENDARY"
     }
+    val cardBorder = if (state.isSelected) BorderStroke(2.dp, Success) else null
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
             contentColor = contentColor
-        )
+        ),
+        elevation = CardDefaults.cardElevation(8.dp),
+        border = cardBorder,
+        modifier = modifier.clickable(onClick = onClick)
     ) {
         Column(
             modifier = modifier
@@ -91,6 +103,8 @@ fun ShopCard(
                     .height(70.dp)
                     .fillMaxWidth()
                     .background(previewBackgroundColor, previewShape)
+                    .clip(previewShape)
+                    .drawCanvasBackground(state.canvasBackground)
                     .border(
                         2.dp,
                         borderColor,
@@ -98,15 +112,42 @@ fun ShopCard(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (!state.isAvailable) {
+                state.penColor?.let {
+                    when (it) {
+                        is PenColor.SolidColor -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.pen_preview),
+                                contentDescription = "Pen",
+                                tint = it.color
+                            )
+                        }
+                        is PenColor.Gradient -> {
+                            val brushGradient = Brush.linearGradient(it.colors)
+                            Icon(
+                                modifier = Modifier
+                                    .graphicsLayer(alpha = 0.99f)
+                                    .drawWithCache {
+                                        onDrawWithContent {
+                                            drawContent()
+                                            drawRect(brushGradient, blendMode = BlendMode.SrcAtop)
+                                        }
+                                    },
+                                painter = painterResource(id = R.drawable.pen_preview),
+                                contentDescription = null,
+                            )
+                        }
+                    }
+                }
+                if (state.isLocked) {
                     Icon(
                         painter = painterResource(id = R.drawable.lock),
-                        contentDescription = "Not available"
+                        contentDescription = "Not available",
+                        tint = Color.Unspecified
                     )
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            if (state.isPurchased) {
+            if (!state.isLocked) {
                 Icon(
                     painter = painterResource(id = R.drawable.shop),
                     contentDescription = "Already purchased"
@@ -136,20 +177,14 @@ enum class ShopItemGrade {
     LEGENDARY
 }
 
-sealed interface ItemType {
-    data class Pen(val data: PenAsset) : ItemType
-    data class Canvas(val data: CanvasBackgroundAsset) : ItemType
-}
-
 data class ShopItemState(
     val id: Int,
-    val penColor: PenColor,
-    val canvasBackground: CanvasBackground,
+    val penColor: PenColor?,
+    val canvasBackground: CanvasBackground?,
     val grade: ShopItemGrade,
     val price: Int,
-    val isPurchased: Boolean,
+    val isLocked: Boolean,
     val isSelected: Boolean,
-    val isAvailable: Boolean,
 )
 
 @Preview
@@ -164,9 +199,8 @@ private fun Preview() {
                     canvasBackground = CanvasBackground.SolidColor(Color.Cyan),
                     grade = ShopItemGrade.BASIC,
                     price = 200,
-                    isPurchased = true,
+                    isLocked = false,
                     isSelected = false,
-                    isAvailable = true
                 )
             )
             ShopCard(
@@ -176,21 +210,19 @@ private fun Preview() {
                     canvasBackground = CanvasBackground.SolidColor(Color.Cyan),
                     grade = ShopItemGrade.PREMIUM,
                     price = 200,
-                    isPurchased = true,
+                    isLocked = true,
                     isSelected = false,
-                    isAvailable = true
                 )
             )
             ShopCard(
                 state = ShopItemState(
                     id = 0,
-                    penColor = PenColor.SolidColor(Color.Red),
-                    canvasBackground = CanvasBackground.SolidColor(Color.Cyan),
+                    penColor = PenColor.Gradient(listOf(Color.Red, Color.Green)),
+                    canvasBackground = null,
                     grade = ShopItemGrade.LEGENDARY,
                     price = 200,
-                    isPurchased = false,
+                    isLocked = true,
                     isSelected = false,
-                    isAvailable = true
                 )
             )
         }

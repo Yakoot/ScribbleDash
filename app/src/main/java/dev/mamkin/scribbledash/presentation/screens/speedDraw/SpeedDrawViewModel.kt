@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.speedDraw
 
+import ShopRepository
 import StatisticsRepository
 import android.graphics.Path
 import androidx.compose.ui.geometry.Size
@@ -10,6 +11,7 @@ import dev.mamkin.scribbledash.domain.DifficultyLevel
 import dev.mamkin.scribbledash.domain.DrawingResult
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.domain.calculateResults
+import dev.mamkin.scribbledash.domain.getCoinsResult
 import dev.mamkin.scribbledash.presentation.models.ImageData
 import dev.mamkin.scribbledash.presentation.utils.scaleToNewSize
 import kotlinx.coroutines.Job
@@ -27,7 +29,8 @@ const val SPEED_DRAW_TIME = 120
 
 class SpeedDrawViewModel(
     private val imagesRepository: ImagesRepository,
-    private val statisticsRepository: StatisticsRepository
+    private val statisticsRepository: StatisticsRepository,
+    private val shopRepository: ShopRepository
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -39,6 +42,7 @@ class SpeedDrawViewModel(
     private var timerJob: Job? = null
     private var remainingTime = SPEED_DRAW_TIME
     private val results: MutableList<DrawingResult> = mutableListOf()
+    private var coinsEarned: Int = 0
 
     private val _state = MutableStateFlow<SpeedDrawState>(SpeedDrawState.DifficultyLevel)
     val state = _state
@@ -80,13 +84,15 @@ class SpeedDrawViewModel(
     }
 
     private fun calculateScore() {
+        val level = difficultyLevel ?: return
         viewModelScope.launch {
             val drawingResult = calculateResults(
                 exampleImagePaths = exampleImagePaths,
                 userImagePaths = userImagePaths,
                 canvasSize = canvasSize,
-                difficultyLevel = difficultyLevel!!
+                difficultyLevel = level
             )
+            coinsEarned += drawingResult.rating.getCoinsResult(level)
             results.add(drawingResult)
             val needToIncreaseCounter = drawingResult.rating != Rating.OOPS
             if (needToIncreaseCounter) {
@@ -136,6 +142,7 @@ class SpeedDrawViewModel(
 
             statisticsRepository.updateSpeedDrawCount(drawingsCompleted)
             statisticsRepository.updateHighestSpeedDrawScore(averageScore.toInt())
+            shopRepository.addCoins(coinsEarned)
 
             val isNewHighScore = averageScore.toInt() > currentHighestScore
             val isNewDrawingsCountRecord = drawingsCompleted > currentHighestDrawCount
@@ -217,6 +224,8 @@ class SpeedDrawViewModel(
     override fun onCleared() {
         super.onCleared()
         images = emptyList()
+        coinsEarned = 0
+        results.clear()
         remainingTime = SPEED_DRAW_TIME
         timerJob?.cancel()
     }

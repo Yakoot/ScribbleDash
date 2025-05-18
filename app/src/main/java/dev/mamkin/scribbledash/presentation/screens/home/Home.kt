@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -41,7 +40,6 @@ import dev.mamkin.scribbledash.ui.theme.Primary
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.Success
 import dev.mamkin.scribbledash.ui.theme.TertiaryContainer
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>(
@@ -54,13 +52,8 @@ fun HomeRoot(
     val shopRepository: ShopRepository = koinInject<ShopRepository>()
     val coins: Int by shopRepository.coinsCount.collectAsStateWithLifecycle(initialValue = 0)
 
-    val coroutineScope = rememberCoroutineScope()
-
     HomeScreen(
         onGameModeClick = {
-            coroutineScope.launch {
-                shopRepository.addCoins(300)
-            }
             when (it) {
                 GameMode.OneRoundWonder -> navigator.navigate(OneRoundWonderRootDestination)
                 GameMode.SpeedDraw -> navigator.navigate(SpeedDrawRootDestination)

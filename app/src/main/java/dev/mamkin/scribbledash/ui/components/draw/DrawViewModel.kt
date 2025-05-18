@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
 class DrawViewModel(
-    val shopRepository: ShopRepository
+    shopRepository: ShopRepository
 ) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false

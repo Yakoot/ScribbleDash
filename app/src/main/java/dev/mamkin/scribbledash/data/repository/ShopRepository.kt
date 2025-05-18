@@ -42,7 +42,7 @@ class ShopRepository(
             }
         }
         .map { preferences ->
-            preferences[PreferencesKeys.SELECTED_PEN_ID] ?: 13
+            preferences[PreferencesKeys.SELECTED_PEN_ID] ?: 0
         }
 
     val selectedCanvasId: Flow<Int> = dataStore.data
@@ -54,7 +54,7 @@ class ShopRepository(
             }
         }
         .map { preferences ->
-            preferences[PreferencesKeys.SELECTED_CANVAS_ID] ?: 14
+            preferences[PreferencesKeys.SELECTED_CANVAS_ID] ?: 0
         }
 
     val purchasedPenIds: Flow<List<Int>> = dataStore.data
@@ -69,7 +69,7 @@ class ShopRepository(
             preferences[PreferencesKeys.PURCHASED_PEN_IDS]
                 ?.split(",")
                 ?.mapNotNull { it.toIntOrNull() }
-                ?: emptyList()
+                ?: listOf(0)
         }
 
     val purchasedCanvasIds: Flow<List<Int>> = dataStore.data
@@ -84,7 +84,7 @@ class ShopRepository(
             preferences[PreferencesKeys.PURCHASED_CANVAS_IDS]
                 ?.split(",")
                 ?.mapNotNull { it.toIntOrNull() }
-                ?: emptyList()
+                ?: listOf(0)
         }
 
     suspend fun addCoins(count: Int) {
@@ -138,6 +138,16 @@ class ShopRepository(
     suspend fun selectCanvasBackground(id: Int) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.SELECTED_CANVAS_ID] = id
+        }
+    }
+
+    suspend fun testResetAll() {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SELECTED_CANVAS_ID] = 0
+            preferences[PreferencesKeys.SELECTED_PEN_ID] = 0
+            preferences[PreferencesKeys.COINS_COUNT] = 0
+            preferences[PreferencesKeys.PURCHASED_CANVAS_IDS] = "0"
+            preferences[PreferencesKeys.PURCHASED_PEN_IDS] = "0"
         }
     }
 } 
