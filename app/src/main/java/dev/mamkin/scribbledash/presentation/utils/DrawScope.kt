@@ -42,9 +42,36 @@ internal fun DrawScope.drawPath(
         }
     }
 
+    drawPathWithThicknessAndPenColor(
+        path = smoothedPath.asAndroidPath(),
+        thickness = thickness,
+        penColor = penColor ?: PenColor.SolidColor(Color.Black)
+    )
+}
+
+fun DrawScope.drawPathsWithThickness(
+    paths: List<AndroidPath>,
+    thickness: Float = 10f,
+    penColor: PenColor = PenColor.SolidColor(Color.Black)
+) {
+    paths.forEach { path ->
+        drawPathWithThicknessAndPenColor(
+            path = path,
+            thickness = thickness,
+            penColor = penColor
+        )
+    }
+}
+
+
+fun DrawScope.drawPathWithThicknessAndPenColor(
+    path: AndroidPath,
+    thickness: Float = 10f,
+    penColor: PenColor = PenColor.SolidColor(Color.Black)
+) {
     when (penColor) {
         is PenColor.Gradient -> {
-            val androidPath = smoothedPath.asAndroidPath()
+            val androidPath = path
             val pathMeasure = PathMeasure(androidPath, false)
             val pathLength = pathMeasure.length
             val steps = 100
@@ -95,9 +122,10 @@ internal fun DrawScope.drawPath(
                 }
             }
         }
+
         is PenColor.SolidColor -> {
             drawPath(
-                path = smoothedPath,
+                path = path.asComposePath(),
                 color = penColor.color,
                 style = Stroke(
                     width = thickness,
@@ -106,30 +134,5 @@ internal fun DrawScope.drawPath(
                 )
             )
         }
-        else -> {
-            drawPath(
-                path = smoothedPath,
-                color = Color.Black,
-                style = Stroke(
-                    width = thickness,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round
-                )
-            )
-        }
-    }
-}
-
-fun DrawScope.drawPathsWithThickness(paths: List<AndroidPath>, thickness: Float = 10f) {
-    paths.forEach { path ->
-        drawPath(
-            path = path.asComposePath(),
-            color = Color.Black,
-            style = Stroke(
-                width = thickness,
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round
-            )
-        )
     }
 }

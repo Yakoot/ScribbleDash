@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.endlessMode
 
+import ShopRepository
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,24 +19,34 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.presentation.utils.drawGrid
 import dev.mamkin.scribbledash.ui.components.RatingText
 import dev.mamkin.scribbledash.ui.components.common.AppButton
+import dev.mamkin.scribbledash.ui.components.draw.drawCanvasBackground
 import dev.mamkin.scribbledash.ui.components.draw.measureWithoutPadding
 import dev.mamkin.scribbledash.ui.components.game.PreviewCanvas
+import dev.mamkin.scribbledash.ui.theme.CanvasBackground
 import dev.mamkin.scribbledash.ui.theme.OnBackground
 import dev.mamkin.scribbledash.ui.theme.OnSurface
+import dev.mamkin.scribbledash.ui.theme.PenColor
 import dev.mamkin.scribbledash.ui.theme.ScribbleDashTheme
 import dev.mamkin.scribbledash.ui.theme.Success
+import dev.mamkin.scribbledash.ui.theme.canvasBackgroundAssets
+import dev.mamkin.scribbledash.ui.theme.penAssets
+import org.koin.compose.koinInject
 
 @Composable
 fun RoundResultsView(
@@ -45,6 +56,16 @@ fun RoundResultsView(
     onFinish: () -> Unit = {},
     onNext: () -> Unit = {}
 ) {
+    val shopRepository: ShopRepository = koinInject()
+    val selectedPenId by shopRepository.selectedPenId.collectAsStateWithLifecycle(0)
+    val selectedCanvasId by shopRepository.selectedCanvasId.collectAsStateWithLifecycle(0)
+
+    val penColor: PenColor = remember(selectedPenId) {
+        penAssets.find { it.id == selectedPenId }?.color ?: PenColor.SolidColor(Color.Black)
+    }
+    val background: CanvasBackground = remember(selectedCanvasId) {
+        canvasBackgroundAssets.find { it.id == selectedCanvasId }?.background ?: canvasBackgroundAssets.first().background
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -121,9 +142,10 @@ fun RoundResultsView(
                                 .fillMaxSize()
                                 .padding(6.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .drawCanvasBackground(background)
                                 .drawGrid(MaterialTheme.colorScheme.onSurfaceVariant, 12.dp),
                             paths = state.userImageData,
+                            penColor = penColor
                         )
                     }
                 }

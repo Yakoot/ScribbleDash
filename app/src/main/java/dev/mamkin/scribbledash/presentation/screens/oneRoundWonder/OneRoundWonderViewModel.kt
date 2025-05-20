@@ -2,7 +2,6 @@ package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 
 import ShopRepository
 import android.graphics.Path
-import android.util.Log
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -132,22 +131,6 @@ class OneRoundWonderViewModel(
 
     private fun openDrawScreen() {
         _state.value = OneRoundWonderState.Draw
-    }
-
-    private fun calculateFinalScore() {
-        if (canvasSize == Size.Zero) {
-            Log.w("GameViewModel", "Cannot generate example bitmap: canvasSize is Zero.")
-            return
-        }
-        val drawingResult = calculateResults(
-            exampleImagePaths = exampleImagePaths,
-            userImagePaths = userImagePaths,
-            canvasSize = canvasSize,
-            difficultyLevel = difficultyLevel!!
-        )
-        finalScore = drawingResult.score
-        rating = drawingResult.rating
-        val coinsToAdd = rating.getCoinsResult(difficultyLevel!!)
     }
 
     private fun restartGame() {
