@@ -1,7 +1,7 @@
 package dev.mamkin.scribbledash.presentation.screens.oneRoundWonder
 
+import ShopRepository
 import android.graphics.Path
-import android.util.Log
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +9,7 @@ import dev.mamkin.scribbledash.data.repository.ImagesRepository
 import dev.mamkin.scribbledash.domain.DifficultyLevel
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.domain.calculateResults
+import dev.mamkin.scribbledash.domain.getCoinsResult
 import dev.mamkin.scribbledash.presentation.utils.scaleToNewSize
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OneRoundWonderViewModel(
-    private val imagesRepository: ImagesRepository
+    private val imagesRepository: ImagesRepository,
+    private val shopRepository: ShopRepository
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -69,13 +71,14 @@ class OneRoundWonderViewModel(
     private fun onImageDrawn(paths: List<Path>) {
         val state = _state.value
         if (state !is OneRoundWonderState.Draw) return
+        val level = difficultyLevel ?: return
         userImagePaths = paths
         viewModelScope.launch {
             val drawingResult = calculateResults(
                 exampleImagePaths = exampleImagePaths,
                 userImagePaths = userImagePaths,
                 canvasSize = canvasSize,
-                difficultyLevel = difficultyLevel!!
+                difficultyLevel = level
             )
             _state.value = OneRoundWonderState.Results(
                 rating = drawingResult.rating,
@@ -83,6 +86,8 @@ class OneRoundWonderViewModel(
                 exampleImageData = exampleImagePaths,
                 userImageData = userImagePaths
             )
+            val coins = drawingResult.rating.getCoinsResult(level)
+            shopRepository.addCoins(coins)
         }
     }
 
@@ -126,21 +131,6 @@ class OneRoundWonderViewModel(
 
     private fun openDrawScreen() {
         _state.value = OneRoundWonderState.Draw
-    }
-
-    private suspend fun calculateFinalScore() {
-        if (canvasSize == Size.Zero) {
-            Log.w("GameViewModel", "Cannot generate example bitmap: canvasSize is Zero.")
-            return
-        }
-        val drawingResult = calculateResults(
-            exampleImagePaths = exampleImagePaths,
-            userImagePaths = userImagePaths,
-            canvasSize = canvasSize,
-            difficultyLevel = difficultyLevel!!
-        )
-        finalScore = drawingResult.score
-        rating = drawingResult.rating
     }
 
     private fun restartGame() {

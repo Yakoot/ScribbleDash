@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
@@ -23,7 +22,6 @@ import dev.mamkin.scribbledash.ui.components.Timer
 import dev.mamkin.scribbledash.ui.components.common.AppCloseIcon
 import dev.mamkin.scribbledash.ui.components.common.AppTopBar
 import dev.mamkin.scribbledash.ui.components.draw.DrawView
-import dev.mamkin.scribbledash.ui.components.draw.DrawViewModel
 import dev.mamkin.scribbledash.ui.components.draw.measureWithoutPadding
 import dev.mamkin.scribbledash.ui.components.game.DifficultyLevelView
 import dev.mamkin.scribbledash.ui.components.game.PreviewView
@@ -126,12 +124,9 @@ fun SpeedDrawScreen(
                 }
 
                 is SpeedDrawState.Draw -> {
-                    val drawViewModel = viewModel<DrawViewModel>()
                     DrawView(
-                        viewModel = drawViewModel,
                         onDone = {
                             onAction(SpeedDrawAction.ImageDrawn(it))
-                            drawViewModel.clear()
                         }
                     )
                 }

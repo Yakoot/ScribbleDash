@@ -1,20 +1,32 @@
 package dev.mamkin.scribbledash.ui.components.draw
 
+import ShopRepository
 import android.graphics.Path
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.mamkin.scribbledash.presentation.utils.createPaths
+import dev.mamkin.scribbledash.ui.theme.CanvasBackground
+import dev.mamkin.scribbledash.ui.theme.PenColor
+import dev.mamkin.scribbledash.ui.theme.canvasBackgroundAssets
+import dev.mamkin.scribbledash.ui.theme.penAssets
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
-class DrawViewModel() : ViewModel(), KoinComponent {
+class DrawViewModel(
+    shopRepository: ShopRepository
+) : ViewModel(), KoinComponent {
 
     private var hasLoadedInitialData = false
+
+    val selectedPenId = shopRepository.selectedPenId
+    val selectedBackgroundColorId = shopRepository.selectedCanvasId
 
     private val _state = MutableStateFlow(DrawState())
     val state = _state
@@ -28,6 +40,22 @@ class DrawViewModel() : ViewModel(), KoinComponent {
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = DrawState()
+        )
+
+    val selectedPenColor: StateFlow<PenColor?> = selectedPenId
+        .map { id -> penAssets.find { it.id == id }?.color }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = penAssets.firstOrNull()?.color
+        )
+
+    val selectedCanvasBackground: StateFlow<CanvasBackground?> = selectedBackgroundColorId
+        .map { id -> canvasBackgroundAssets.find { it.id == id }?.background }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = canvasBackgroundAssets.firstOrNull()?.background
         )
 
     fun onAction(action: DrawAction) {

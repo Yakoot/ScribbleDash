@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.ShopRootDestination
 import com.ramcosta.composedestinations.generated.destinations.StatisticsRootDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
@@ -31,12 +32,6 @@ import org.koin.core.context.startKoin
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_statistics")
 
 class MainActivity : ComponentActivity() {
-
-    companion object {
-        private const val PERMISSION_REQUEST_CODE = 100
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -55,7 +50,8 @@ class MainActivity : ComponentActivity() {
                 val isBottomBarVisible = remember(currentDestination) {
                     listOf(
                         StatisticsRootDestination.route,
-                        HomeRootDestination.route
+                        HomeRootDestination.route,
+                        ShopRootDestination.route
                     ).contains(currentDestination.route)
                 }
 

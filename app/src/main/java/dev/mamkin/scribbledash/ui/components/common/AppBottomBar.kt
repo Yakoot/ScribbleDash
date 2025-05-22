@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.HomeRootDestination
+import com.ramcosta.composedestinations.generated.destinations.ShopRootDestination
 import com.ramcosta.composedestinations.generated.destinations.StatisticsRootDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
@@ -19,6 +20,7 @@ import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
 import dev.mamkin.scribbledash.R
 import dev.mamkin.scribbledash.ui.theme.Primary
+import dev.mamkin.scribbledash.ui.theme.Secondary
 import dev.mamkin.scribbledash.ui.theme.TertiaryContainer
 
 @Composable
@@ -70,4 +72,5 @@ enum class BottomBarDestination(
         TertiaryContainer
     ),
     Home(HomeRootDestination, R.drawable.ic_home, Primary),
+    Shop(ShopRootDestination, R.drawable.shop, Secondary)
 }

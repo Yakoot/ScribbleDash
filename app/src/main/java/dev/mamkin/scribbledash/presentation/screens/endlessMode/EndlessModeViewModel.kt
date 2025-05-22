@@ -1,5 +1,6 @@
 package dev.mamkin.scribbledash.presentation.screens.endlessMode
 
+import ShopRepository
 import StatisticsRepository
 import android.graphics.Path
 import androidx.compose.ui.geometry.Size
@@ -10,6 +11,7 @@ import dev.mamkin.scribbledash.domain.DifficultyLevel
 import dev.mamkin.scribbledash.domain.DrawingResult
 import dev.mamkin.scribbledash.domain.Rating
 import dev.mamkin.scribbledash.domain.calculateResults
+import dev.mamkin.scribbledash.domain.getCoinsResult
 import dev.mamkin.scribbledash.presentation.models.ImageData
 import dev.mamkin.scribbledash.presentation.utils.scaleToNewSize
 import kotlinx.coroutines.delay
@@ -24,7 +26,8 @@ import kotlinx.coroutines.launch
 
 class EndlessModeViewModel(
     private val imagesRepository: ImagesRepository,
-    private val statisticsRepository: StatisticsRepository
+    private val statisticsRepository: StatisticsRepository,
+    private val shopRepository: ShopRepository
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -34,6 +37,7 @@ class EndlessModeViewModel(
     private var exampleImagePaths: List<Path> = emptyList()
     private var userImagePaths: List<Path> = emptyList()
     private val results: MutableList<DrawingResult> = mutableListOf()
+    private var coinsEarned: Int = 0
 
     private val _state = MutableStateFlow<EndlessModeState>(EndlessModeState.DifficultyLevel)
     val state = _state
@@ -69,6 +73,7 @@ class EndlessModeViewModel(
     }
 
     private fun finishGame() {
+        val level = difficultyLevel ?: return
         val drawingsCompleted = _drawingsCount.value
         val averageScore = if (results.isNotEmpty()) {
             results.sumOf { it.score } / results.size
@@ -82,6 +87,8 @@ class EndlessModeViewModel(
 
             statisticsRepository.updateEndlessModeCount(drawingsCompleted)
             statisticsRepository.updateHighestEndlessModeScore(averageScore.toInt())
+
+            shopRepository.addCoins(coinsEarned)
 
             val isNewHighScore = averageScore.toInt() > currentHighestScore
             val isNewDrawingsCountRecord = drawingsCompleted > currentHighestDrawCount
@@ -161,12 +168,13 @@ class EndlessModeViewModel(
     }
 
     private fun calculateScore() {
+        val level = difficultyLevel ?: return
         viewModelScope.launch {
             val drawingResult = calculateResults(
                 exampleImagePaths = exampleImagePaths,
                 userImagePaths = userImagePaths,
                 canvasSize = canvasSize,
-                difficultyLevel = difficultyLevel!!
+                difficultyLevel = level
             )
             val isSuccessRound = drawingResult.rating != Rating.OOPS &&
                     drawingResult.rating != Rating.MEH
@@ -184,11 +192,14 @@ class EndlessModeViewModel(
                 _drawingsCount.update { it + 1 }
                 results.add(drawingResult)
             }
+            coinsEarned += drawingResult.rating.getCoinsResult(level)
         }
     }
 
     private fun restartGame() {
         images = emptyList()
+        coinsEarned = 0
+        results.clear()
         _drawingsCount.value = 0
         _state.value = EndlessModeState.DifficultyLevel
     }
